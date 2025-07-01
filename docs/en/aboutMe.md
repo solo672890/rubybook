@@ -22,36 +22,20 @@ comment: false
 
 <p align="right">
     <button style="background-color: #F8DC75;font-weight: 600;
-width: 100px;height:30px;border-radius: 5px;" onclick="window.location.href='/en/aboutMe'">
-        translate
+width: 100px;height:30px;border-radius: 5px;" onclick="window.location.href='/aboutMe'">
+        翻译
     </button>
 </p>
 
 ---
-- 👋 Hi, I'm Ruby     
+- 👋 Hi, I'm Ruby
 - 🔭 I'm currently working on backend development
 - 📫 Email: [solo6729890@gmail.com](mailto:solo6729890@gmail.com)
 - ✈️ telegram: [ruby1314](https://t.me/ruby1314)
-- 😆 My motto: “世界上废物那么多,为什么不能是我”
-  
-### 99年出生，机械男一枚,毕业于 [四川航天职业技术学院](https://www.scavc.com/),热爱躺平
-
+- 😆 My motto: There is so much waste in the world, why can't it be me
 ---
--  2010 - 2017 <sapn class="marker-evy">自学C语言</sapn>
--  2005 - 2007 [四川航天职业技术学院](https://www.scavc.com/) 飞行制造系钳工班
--  2007 - 2008 长虹集团实习 - <sapn class="marker-evy">实习,打螺丝</sapn>
--  2008 - 2009 中国航天第七研究院下属九鼎科技有限公司 - <sapn class="marker-evy">焊工实习</sapn>
--  2010 - 2011 某机械加工中心 - <sapn class="marker-evy">数控铣床实习</sapn>
--  2012 - 2014 成都一汽富维延锋彼欧装饰有限公司 - <sapn class="marker-evy">流水线质检员</sapn>
--  2014 - 2016 <sapn class="marker-evy">迷茫,摆烂</sapn>
--  2017 - 2018 <sapn class="marker-evy">自学编程php</sapn>
--  2018 - 2020 <sapn class="marker-evy">入职某无名外包小公司,担任php开发</sapn>
--  2020 - 2023 <sapn class="marker-evy">疫情失业,被迫创业搞接单工作室</sapn>
--  2023 - 2024 成都布鲁潘达科技有限公司 -<sapn class="marker-evy">受客户邀约入职该游戏开发公司</sapn>
--  2024 -  ing 自由开发
- 
-## 技术栈
-### 后端
+
+### backend technology stack
 
 <p>
   <img src="https://img.shields.io/badge/-MySQL-4479A1?logo=MySQL&logoColor=FFF" alt="MySQL" style="display: inline-block;" />&nbsp;
@@ -78,7 +62,7 @@ width: 100px;height:30px;border-radius: 5px;" onclick="window.location.href='/en
   <img src="https://img.shields.io/badge/-GraphQL-FFF?logo=GraphQL&logoColor=E10098" alt="GraphQL" style="display: inline-block;" />&nbsp;
 </p>
 
-### web前端
+### front end technology stack
 
 <p>
   <img src="https://img.shields.io/badge/-Vue3-C0C0C0?logo=Vue.js&logoColor=4FC08D" alt="Vue3" style="display: inline-block;" />&nbsp;
@@ -117,7 +101,7 @@ width: 100px;height:30px;border-radius: 5px;" onclick="window.location.href='/en
   <img src="https://img.shields.io/badge/-Ubuntu-E95420?logo=Ubuntu&logoColor=FFF" alt="Ubuntu" style="display: inline-block;" />&nbsp;
 </p>
 
-### 运维
+### operations and maintenance technology stack
 
 <p>
   <img src="https://img.shields.io/badge/-阿里云-FF6A00?logo=Alibaba-Cloud&logoColor=FFF" alt="阿里云" style="display: inline-block;" />&nbsp;
@@ -129,14 +113,14 @@ width: 100px;height:30px;border-radius: 5px;" onclick="window.location.href='/en
   <img src="https://img.shields.io/badge/-Lua-FFF?&logo=Lua&logoColor=2C2D72" alt="Lua" style="display: inline-block;" />&nbsp;
 </p>
 
-### 测试
+### TESTING TECHNOLOGY STACK
 
 <p>
   <img src="https://img.shields.io/badge/-Postman-FF6C37?logo=Postman&logoColor=FFF" alt="Postman" style="display: inline-block;" />&nbsp;
   <img src="https://img.shields.io/badge/-JMeter-D3D3D3?logo=Apache-JMeter&logoColor=D22128" alt="JMeter" style="display: inline-block;" />&nbsp;
 </p>
 
-### 开发工具
+### DEVELOPMENT-TOOL
 
 <p>
   <img src="https://img.shields.io/badge/-Intellij%20IDEA-000?logo=Intellij-IDEA&logoColor=FFF" alt="Intellij IDEA" style="display: inline-block;" />&nbsp;
@@ -146,4 +130,10 @@ width: 100px;height:30px;border-radius: 5px;" onclick="window.location.href='/en
   <img src="https://img.shields.io/badge/-VSCode-C0C0C0?logo=Visual-Studio-Code&logoColor=007ACC" alt="VSCode" style="display: inline-block;" />&nbsp;
 </p>
 
+### Other
 
+<p>
+  <img src="https://img.shields.io/badge/-Markdown-000?logo=Markdown&logoColor=FFF" alt="Markdown" style="display: inline-block;" />&nbsp;
+  <img src="https://img.shields.io/badge/-WordPress-21759B?logo=WordPress&logoColor=FFF" alt="WordPress" style="display: inline-block;" />&nbsp;
+  <img src="https://img.shields.io/badge/-GitHub%20Pages-222?logo=GitHub-Pages&logoColor=FFF" alt="GitHub Pages" style="display: inline-block;" />&nbsp;
+</p>

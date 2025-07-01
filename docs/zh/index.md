@@ -3,7 +3,7 @@ layout: home
 
 title: RubyBook
 titleTemplate: 中小型IT项目指南
-
+description: 中小型IT项目指南 | 结构化、体系化的技术知识内容分享与创作
 hero:
   name: RubyBook
   text: "中小型IT项目指南"
@@ -17,7 +17,7 @@ hero:
       link: /zh/whatsRubyBook
     - theme: alt
       text: 快速开始
-      link: /nav/
+      link: /getting-started
 
 features:
   - icon: 📝

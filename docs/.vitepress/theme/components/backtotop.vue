@@ -67,7 +67,7 @@ onBeforeUnmount(() => {
       </svg>
       <div 
         class="vitepress-backTop-main" 
-        title="返回顶部" 
+        title="返回顶部"
         @click="scrollToTop()"
       >
         <svg class="icon" viewBox="0 0 1024 1024">

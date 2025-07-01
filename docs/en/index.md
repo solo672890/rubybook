@@ -3,6 +3,7 @@ layout: home
 
 title: RubyBook
 titleTemplate: Guidelines for Small and Medium sized IT Projects
+description: Guidelines for Small and Medium sized IT Projects | Structured and Systematic Technical Knowledge Content Sharing and Creation
 
 hero:
   name: RubyBook
@@ -17,7 +18,7 @@ hero:
       link: /en/whatsRubyBook
     - theme: alt
       text: Quick start
-      link: /nav/
+      link: /en/getting-started
 
 features:
   - icon: 📝

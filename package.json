@@ -23,11 +23,13 @@
   "packageManager": "pnpm@8.6.10+sha1.98fe2755061026799bfa30e7dc8d6d48e9c3edf0",
   "type": "module",
   "scripts": {
-    "dev": "vitepress dev docs",
-    "docs:build": "vitepress build docs",
+    "dev": "vitepress dev docs --mode development",
+    "docs:build": "vitepress build docs --mode production",
     "docs:preview": "vitepress preview docs"
   },
   "dependencies": {
+    "vite": "^7.0.0",
+    "vitepress-markdown-timeline": "^1.2.2",
     "vitepress-plugin-announcement": "^0.1.4"
   }
 }

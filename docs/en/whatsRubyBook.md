@@ -32,7 +32,9 @@ If you encounter confusion during development, you may want to open this book, p
 —— chatGPT
 
 
-
+<p align="center">
+  <img src="/miji.jpeg" alt="miji"  />
+</p>
 
 
 

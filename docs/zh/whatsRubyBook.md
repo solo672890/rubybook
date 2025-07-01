@@ -39,6 +39,10 @@ editLink: false
 
 
 
+<p align="center">
+  <img src="/miji.jpeg" alt="miji"  />
+</p>
+
 
 
 

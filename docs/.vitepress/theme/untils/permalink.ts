@@ -68,7 +68,6 @@ export const usePosts = async ({
             data.title = extractedTitle;
           }
         }
-
         // 生成或使用现有的permalink
         if (!data.permalink) {
           data.permalink = `/${srcDir}/${generateString(6)}`;
