@@ -42,5 +42,5 @@ export const zhNav: DefaultTheme.NavItem[] = [
             },
         ],
     },
-    { text: '更新日志', link: '/changelog' },
+    { text: '更新日志', link: '/updateLog' },
 ]

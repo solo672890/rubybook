@@ -4,9 +4,11 @@ original: true
 prev: false
 next: false
 sidebar: false
-editLink: false
 comment: false  
 ---
+
+
+
 
 <p align="center">
   <img  style="width:100px;height:100px;" src="/head_logo.jpg" alt="" />
@@ -34,7 +36,7 @@ width: 100px;height:30px;border-radius: 5px;" onclick="window.location.href='/en
 - ✈️ telegram: [ruby1314](https://t.me/ruby1314)
 - 😆 My motto: “世界上废物那么多,为什么不能是我”
   
-### 99年出生，机械男一枚,毕业于 [四川航天职业技术学院](https://www.scavc.com/),热爱躺平
+### 92年出生，机械男一枚,毕业于 [四川航天职业技术学院](https://www.scavc.com/),热爱躺平
 
 ---
 -  2010 - 2017 <sapn class="marker-evy">自学C语言</sapn>

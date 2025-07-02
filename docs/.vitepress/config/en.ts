@@ -17,7 +17,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
         returnToTopLabel: 'top', // 更改手机端菜单文字显示
         //编辑本页
         editLink: {
-            pattern: 'https://github.com/Yiov/vitepress-doc/edit/main/docs/:path', //todo 改成自己的仓库
+            pattern: 'https://github.com/solo672890/RubyBook/edit/main/docs/:path', //todo 改成自己的仓库
             text: 'edit this page on github'
         },
         nav: enNav,

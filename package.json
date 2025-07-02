@@ -24,7 +24,7 @@
   "type": "module",
   "scripts": {
     "dev": "vitepress dev docs --mode development",
-    "docs:build": "vitepress build docs --mode production",
+    "build": "vitepress build docs --mode production",
     "docs:preview": "vitepress preview docs"
   },
   "dependencies": {

@@ -8,7 +8,7 @@ import { MermaidMarkdown, MermaidPlugin } from 'vitepress-plugin-mermaid';
 import { AnnouncementPlugin } from 'vitepress-plugin-announcement'
 const mode = process.env.NODE_ENV || 'development'
 const { VITE_BASE_URL } = loadEnv(mode, process.cwd())
-
+import timeline from "vitepress-markdown-timeline";
 import { usePosts } from './theme/untils/permalink';
 import {loadEnv} from "vite";
 const { rewrites } = await usePosts();
@@ -79,6 +79,7 @@ export default defineConfig({
 
       // 代码组中添加图片
       md.use((md) => {
+        md.use(timeline);
         const defaultRender = md.render
         md.render = (...args) => {
           const [content, env] = args
