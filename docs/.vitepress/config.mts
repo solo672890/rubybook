@@ -155,7 +155,7 @@ export default defineConfig({
           { type: 'text', content: 'telegram' },
           {
             type: 'image',
-            src: '/tg_info.png',
+            src: '/public/tg_info.png',
             style: 'display: inline-block;width:46%;padding-right:6px'
           },
         ],
