@@ -33,7 +33,7 @@ export default defineConfig({
   },
   // #region fav
   head: [
-    ['link', { rel: 'icon', href: '/RubyBook/logo.png' }],
+    ['link', { rel: 'icon', href: '/rubybook/logo.png' }],
     // 网页视口
     ['meta', { name: "viewport", content: "width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no,shrink-to-fit=no" }],
     // 关键词和描述

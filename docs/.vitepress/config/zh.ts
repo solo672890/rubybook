@@ -18,7 +18,7 @@ export const zhConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
         returnToTopLabel: '返回顶部', // 更改手机端菜单文字显示
         //编辑本页
         editLink: {
-            pattern: 'https://github.com/solo672890/RubyBook/edit/main/docs/:path', //todo 改成自己的仓库
+            pattern: 'https://github.com/solo672890/rubybook/edit/main/docs/:path', //todo 改成自己的仓库
             text: '在github上修改'
         },
         nav: zhNav,
