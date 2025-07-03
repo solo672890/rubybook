@@ -33,7 +33,7 @@ export default defineConfig({
   },
   // #region fav
   head: [
-    ['link', { rel: 'icon', href: '/logo.png' }],
+    ['link', { rel: 'icon', href: '/RubyBook/logo.png' }],
     // 网页视口
     ['meta', { name: "viewport", content: "width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no,shrink-to-fit=no" }],
     // 关键词和描述
@@ -155,7 +155,7 @@ export default defineConfig({
           { type: 'text', content: 'telegram' },
           {
             type: 'image',
-            src: '/public/tg_info.png',
+            src: '/RubyBook/tg_info.png',
             style: 'display: inline-block;width:46%;padding-right:6px'
           },
         ],
@@ -167,7 +167,7 @@ export default defineConfig({
           {
             type: 'button',
             content: 'About Me',
-            link: '/aboutMe',
+            link: '/RubyBook/aboutMe',
             props: {
               type: 'success'
             }
