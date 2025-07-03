@@ -7,7 +7,7 @@ import { groupIconMdPlugin, groupIconVitePlugin, localIconLoader } from 'vitepre
 import { MermaidMarkdown, MermaidPlugin } from 'vitepress-plugin-mermaid';
 import { AnnouncementPlugin } from 'vitepress-plugin-announcement'
 const mode = process.env.NODE_ENV || 'development'
-const { VITE_BASE_URL } = loadEnv(mode, process.cwd())
+const { VITE_BASE_URL,VITE_GITHUB_URL } = loadEnv(mode, process.cwd())
 import timeline from "vitepress-markdown-timeline";
 import { usePosts } from './theme/untils/permalink';
 import {loadEnv} from "vite";
@@ -39,11 +39,12 @@ export default defineConfig({
     // 关键词和描述
     ['meta', { name: "keywords", content: "中小型IT项目指南" }],
     ['meta', { name: "keywords", content: "Guidelines for Small and Medium sized IT Projects" }],
+    ['meta', { name: "algolia-site-verification", content: "284A9E94080B2759" }],
 
   ],
   // #endregion fav
   sitemap: {
-    hostname: "https://yourOnlineUrl.com", //todo
+    hostname: VITE_GITHUB_URL,
   },
   base: VITE_BASE_URL, //网站部署到github的vitepress这个仓库里
   // cleanUrls:true, //开启纯净链接无html
@@ -155,7 +156,7 @@ export default defineConfig({
           { type: 'text', content: 'telegram' },
           {
             type: 'image',
-            src: '/RubyBook/tg_info.png',
+            src: VITE_BASE_URL+'tg_info.png',
             style: 'display: inline-block;width:46%;padding-right:6px'
           },
         ],
@@ -167,7 +168,7 @@ export default defineConfig({
           {
             type: 'button',
             content: 'About Me',
-            link: '/RubyBook/aboutMe',
+            link: VITE_BASE_URL+'aboutMe',
             props: {
               type: 'success'
             }

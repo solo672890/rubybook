@@ -74,8 +74,8 @@ export const sharedConfig = defineConfig({
         search: {
             provider: 'algolia',
             options: {
-                appId: 'QVKQI62L15',
-                apiKey: 'bef8783dde57293ce082c531aa7c7e0c',
+                appId: 'S4MMJMRREV',
+                apiKey: 'c135fb02af99b4c16bc4ddbb31044eba',
                 indexName: 'doc',
                 locales: {
                     searchTrans
