@@ -2,54 +2,16 @@
     "index_name": "doc",
     "start_urls": [
         {
-            "url": "https://github.com/solo672890/RubyBook",
-            "selectors_key": "index",
-            "tags": [
-                "index"
-            ]
-        },
-        {
-            "url": "https://github.com/solo672890/aboutMe",
-            "selectors_key": "aboutMe",
-            "tags": [
-                "aboutMe"
-            ]
-        },
-        {
-            "url": "https://github.com/solo672890/getting-started",
-            "selectors_key": "getting-started",
-            "tags": [
-                "getting-started"
-            ]
-        },
-        "https://github.com/solo672890/RubyBook"
+            "url": "https://solo672890.github.io/RubyBook",
+            "selectors_key": ""
+        }
     ],
-//    "stop_urls": [
-//        "https://vitepress.yiov.top/nav/mao.html"
-//    ],
+    "stop_urls": [],
     "selectors": {
-        "aboutMe": {
+        "default": {
             "lvl0": {
                 "selector": "",
-                "default_value": "前言"
-            },
-            "lvl1": ".content h1",
-            "lvl2": ".content h2",
-            "lvl3": ".content h3",
-            "lvl4": ".content h4",
-            "lvl5": ".content h5",
-            "lvl6": ".content h6",
-            "text": ".content p, .content li",
-            "lang": {
-                "selector": "/html/@lang",
-                "type": "xpath",
-                "global": true
-            }
-        },
-        "getting-started": {
-            "lvl0": {
-                "selector": "",
-                "default_value": "前言"
+                "default_value": "我的文档"
             },
             "lvl1": ".content h1",
             "lvl2": ".content h2",
@@ -67,8 +29,7 @@
     },
     "custom_settings": {
         "attributesForFaceting": [
-            "lang",
-            "tags"
+            "lang"
         ]
     }
 }
