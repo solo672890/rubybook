@@ -37,8 +37,6 @@ editLink: false
 —— chatGPT
 
 
-
-
 <p align="center">
   <img src="/miji.jpeg" alt="miji"  />
 </p>
