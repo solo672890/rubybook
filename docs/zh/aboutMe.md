@@ -24,7 +24,7 @@ comment: false
 
 <p align="right">
     <button style="background-color: #F8DC75;font-weight: 600;
-width: 100px;height:30px;border-radius: 5px;" onclick="window.location.href='/en/aboutMe'">
+width: 100px;height:30px;border-radius: 5px;" onclick="window.location.href='en/aboutMe'">
         translate
     </button>
 </p>
