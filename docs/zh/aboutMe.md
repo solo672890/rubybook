@@ -22,10 +22,11 @@ comment: false
     </a>&nbsp;
 </p>
 
+
 <p align="right">
-    <button style="background-color: #F8DC75;font-weight: 600;
-width: 100px;height:30px;border-radius: 5px;" onclick="window.location.href='en/aboutMe'">
-        translate
+<button style="background-color: #F8DC75;font-weight: 600;
+    width: 100px;height:30px;border-radius: 5px;margin-right: 5px;" onclick="window.location.href='/zh/m_notes/catelogue'">
+        杂记
     </button>
 </p>
 

@@ -22,8 +22,8 @@ comment: false
 
 <p align="right">
     <button style="background-color: #F8DC75;font-weight: 600;
-width: 100px;height:30px;border-radius: 5px;" onclick="window.location.href='/aboutMe'">
-        翻译
+width: 100px;height:30px;border-radius: 5px;" onclick="window.location.href='m_notes/catelogue'">
+        Miscellaneous Notes
     </button>
 </p>
 
