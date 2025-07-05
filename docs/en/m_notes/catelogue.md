@@ -8,5 +8,5 @@ editLink: false
 
 
 
-::: tip  [the life i am looking forward to](./en/record1.md)
+::: tip  [the life i am looking forward to](./record1.md)
 
