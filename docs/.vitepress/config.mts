@@ -39,7 +39,7 @@ export default defineConfig({
     // 关键词和描述
     ['meta', { name: "keywords", content: "中小型IT项目指南" }],
     ['meta', { name: "keywords", content: "Guidelines for Small and Medium sized IT Projects" }],
-    ['meta', { name: "algolia-site-verification", content: "284A9E94080B2759" }],
+    ['meta', { name: "algolia-site-verification", content: "24EA7AEE7DDC6BAB" }],
 
   ],
   // #endregion fav

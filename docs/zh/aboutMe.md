@@ -22,7 +22,6 @@ comment: false
     </a>&nbsp;
 </p>
 
-[点我跳转：Frontmatter文章中的大纲](/m_notes/catelogue)
 
 <p align="right">
 <button style="background-color: #F8DC75;font-weight: 600;

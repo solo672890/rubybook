@@ -42,5 +42,6 @@ export const zhNav: DefaultTheme.NavItem[] = [
             },
         ],
     },
+    { text: '导航', link: '/navigation/source_code/php' },
     { text: '更新日志', link: '/updateLog' },
 ]
