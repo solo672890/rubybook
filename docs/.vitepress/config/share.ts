@@ -68,20 +68,20 @@ export const sharedConfig = defineConfig({
         },
 
         //Algolia搜索
-        // search: {
-        //   provider: "local",
-        // },
         search: {
-            provider: 'algolia',
-            options: {
-                appId: '4AKLATZQL2',
-                apiKey: 'cedf59234eba29bf9e19e5e51f738bb3',
-                indexName: 'doc',
-                locales: {
-                    searchTrans
-                },
-            },
+          provider: "local",
         },
+        // search: {
+        //     provider: 'algolia',
+        //     options: {
+        //         appId: '4AKLATZQL2',
+        //         apiKey: 'cedf59234eba29bf9e19e5e51f738bb3',
+        //         indexName: 'doc',
+        //         locales: {
+        //             searchTrans
+        //         },
+        //     },
+        // },
 
 
 

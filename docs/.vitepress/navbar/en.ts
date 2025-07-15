@@ -42,6 +42,6 @@ export const enNav: DefaultTheme.NavItem[] = [
             },
         ],
     },
-    { text: 'navigation', link: '/navigation' },
+    { text: 'navigation', link: '/en/navigation/source_code/php' },
     { text: 'update log', link: '/en/updateLog' },
 ]

@@ -18,5 +18,6 @@ export interface NavLink {
 
 export interface NavData {
   title: string
+  type?: 'tag' | 'article'
   items: NavLink[]
 }
