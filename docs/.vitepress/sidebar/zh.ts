@@ -31,10 +31,12 @@ function sidebarNavigation(): DefaultTheme.SidebarItem[] {
             items: [
                 { text: "php", link: "source_code/php" },
                 { text: "web", link: "source_code/web" },
+                { text: "运维", link: "source_code/oam" },
                 { text: "UI", link: "source_code/ui" },
                 { text: "工具", link: "source_code/tool" },
                 { text: "娱乐", link: "source_code/audio" },
                 { text: "外语", link: "source_code/foreign" },
+                { text: "学习论坛", link: "source_code/learning_forum" },
             ],
         },
 

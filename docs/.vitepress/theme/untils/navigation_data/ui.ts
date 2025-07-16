@@ -15,7 +15,7 @@ export const UI_DATA: NavData[] = [
                 desc: 'icon+插画+字体',
                 link: 'https://iconpark.oceanengine.com/home'
             },{
-                icon: 'https://www.uugai.com/logoa/css/logo.png',
+                icon: '/icons/u.png',
                 title: 'U钙网-logo设计',
                 desc: 'logo设计',
                 link: 'https://www.uugai.com/logoa/font_index.php'

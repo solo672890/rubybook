@@ -12,7 +12,7 @@ outline: [2, 3, 4]
 <script setup>
 import { PHP_DATA } from '/.vitepress/theme/untils/navigation_data/php'
 </script>
-
+[《大话设计模式》PHP版本》](https://www.bookstack.cn/books/flyingalex-design-patterns-by-php)
 
 <MNavLinks v-for="{title, items} in PHP_DATA" :title="title" :items="items"/>
 
