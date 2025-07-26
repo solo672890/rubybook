@@ -88,6 +88,57 @@ export const WEB_DATA: NavData[] = [
             },
         ]
     },
+    {
+        title: 'vitepress',
+        items: [
+            {
+                icon: 'https://vitepress.yiov.top/logo.png',
+                title: 'yiov',
+                badge: {
+                    text: '文档',
+                    type: 'warning',
+                },
+                desc:  'VitePress 快速上手中文教程',
+                link: 'https://vitepress.yiov.top/'
+            },{
+                icon: 'https://theme.sugarat.top/logo.png',
+                title: 'sugarat/theme',
+                badge: {
+                    text: 'blog',
+                    type: 'danger',
+                },
+                desc: '简约风的 Vitepress 博客主题',
+                link: 'https://theme.sugarat.top/'
+            },{
+                icon: '/icons/charles7c_logo.png',
+                title: '查尔斯的知识库',
+                badge: {
+                    text: '文档',
+                    type: 'warning',
+                },
+                desc: '记录 & 分享个人碎片化、结构化、体系化的技术知识内容。',
+                link: 'https://github.com/Charles7c/charles7c.github.io'
+            },{
+                icon: 'https://cdn.imufeng.cn/mblog/avatar-1.jpg',
+                title: '沐风的个人空间',
+                badge: {
+                    text: 'blog',
+                    type: 'danger',
+                },
+                desc: '一名后端小白的互联网自留地/harlanzw.com-vitepress',
+                link: 'https://www.imufeng.cn/'
+            },{
+                icon: 'https://img.cdn.sugarat.top/mdImg/MTY3ODAwMzU3MTc2Ng==678003571766',
+                title: 'EasyPicker(轻取)',
+                badge: {
+                    text: '文档',
+                    type: 'warning',
+                },
+                desc: '在线文件收取平台',
+                link: 'https://docs.ep.sugarat.top/'
+            },
+        ]
+    },
 
 ]
 

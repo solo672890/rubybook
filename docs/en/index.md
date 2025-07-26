@@ -15,10 +15,10 @@ hero:
   actions:
     - theme: brand
       text: What is RubyBook?
-      link: /en/whatsRubyBook
+      link: /en/theory/whatsRubyBook
     - theme: alt
       text: Quick start
-      link: /en/getting-started
+      link: /en/service/linux
 
 features:
   - icon: 📝

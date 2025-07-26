@@ -31,7 +31,7 @@ export const enConfig: LocaleSpecificConfig<DefaultTheme.Config> = {
             copyright: `Copyright © 2019-${new Date().getFullYear()}`
         },
         outline: { // 大纲显示 1-6 级标题
-            level: [1, 6],
+            level: [2, 6],
             label: 'catalogue'
         },
 

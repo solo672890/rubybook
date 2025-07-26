@@ -1,28 +1,46 @@
 import { DefaultTheme } from 'vitepress'
 export const zhSidebar: DefaultTheme.Sidebar = {
-    '/': [
-        {
-            text: '使用指南',
-            collapsed: false,
-            items: [
-                { text: '简介', link: `/guide/` },
-                { text: '快速开始', link: `/quick-started/` },
-                { text: '参考', link: `/reference/` },
-            ]
-        },
-        {
-            text: 'API',
-            collapsed: false,
-            items: [
-                { text: '简介', link: `/abc/` },
-                { text: '快速开始', link: `/bca/` },
-            ]
-        },
-    ],
+    "/theory/": { base: "/theory/", items: theoryService() },
+    "/service/": { base: "/service/", items: sidebarService() },
     "/navigation/": { base: "/navigation/", items: sidebarNavigation() },
 }
 
+function theoryService() :DefaultTheme.SidebarItem[] {
+    return [
+        {
+            text: "理论",
+            collapsed: false,
+            items: [
+                { text: "RubyBook是什么", link: "whatsRubyBook" },
+                { text: "中小型it项目技术选型", link: "technical_selection" },
+                // { text: "问答社区", link: "help" },
+            ],
+        },
+    ];
+}
+function sidebarService() :DefaultTheme.SidebarItem[] {
+    return [
+        {
+            text: "服务端",
+            collapsed: false,
+            items: [
+                { text: "Linux", link: "linux" },
+                { text: "redis", link: "redis" },
+                // { text: "问答社区", link: "help" },
+            ],
+        },
+        {
+            text: "快速开始",
+            collapsed: false,
+            items: [
+                { text: "安装", link: "install" },
+                { text: "目录结构", link: "directory" },
+                { text: "简单示例", link: "tutorial" },
+            ],
+        },
 
+    ];
+}
 function sidebarNavigation(): DefaultTheme.SidebarItem[] {
     return [
         {

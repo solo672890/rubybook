@@ -3,8 +3,8 @@ releaseTime: 2023/7/1
 original: true
 prev: false
 next: false
-sidebar: false
 editLink: false
+comment: true
 
 ---
 
@@ -13,6 +13,11 @@ editLink: false
 ::: tip 简述
 《[RubyBook](/index)》 是一部<<中小型IT项目指南>> ,旨在帮助大家快速了解中小型IT项目的架构,知识等.
 :::
+
+<p align="center">
+  <img src="/miji.jpeg" alt="miji"  />
+</p>
+
 葵花宝典,九阴真经是小说里的武林秘籍,
 他就好比葵花宝典,九阴真经一样.是武林里的武学秘籍.当然,他并没有那么强,甚至连紫霞神功这种二流秘籍,他都相差很远.
 但大部分人都做不到掌门级别,甚至连二流高手都做不到,所以《[RubyBook](/index)》够了.
@@ -34,12 +39,10 @@ editLink: false
 
 
 
-—— chatGPT
+—— `Ruby`
 
 
-<p align="center">
-  <img src="/miji.jpeg" alt="miji"  />
-</p>
+
 
 
 

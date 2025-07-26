@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>澳门威尼斯人</title>
+    <style>
+        /* styles.css */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+        }
+
+        /* 头部样式 */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #000;
+            border-bottom: 4px solid #ffcc00;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-container img {
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .logo-subtext {
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .slogan img {
+            width: 200px;
+            height: auto;
+            margin-right: 10px;
+        }
+
+        .online-service img {
+            width: 100px;
+            height: auto;
+        }
+
+        /* 主体内容样式 */
+        main {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .background-image img {
+            width: 100%;
+            height: auto;
+        }
+
+        .content-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border: 4px solid #ffcc00;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .content-box h2 {
+            color: #ffcc00;
+            margin-bottom: 20px;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .line {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: 2px solid #ffcc00;
+            background-color: transparent;
+            color: #ffcc00;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #ffcc00;
+            color: #000;
+        }
+
+        .enter-btn {
+            background-color: #ffcc00;
+            color: #000;
+        }
+
+        .add-btn {
+            background-color: transparent;
+            color: #ffcc00;
+        }
+
+        /* 底部样式 */
+        footer {
+            background-color: #663300;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .payment-icons img {
+            width: 100%;
+            height: auto;
+        }
+
+        .browser-support img {
+            width: 100%;
+            height: auto;
+        }
+
+        .privacy-policy a {
+            color: #fff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<!-- 头部 -->
+<header>
+    <div class="logo-container">
+        <img src="logo.png" alt="澳门威尼斯人 Logo">
+        <span class="logo-text">澳门威尼斯人</span>
+        <span class="logo-subtext">MACAU VENETIAN</span>
+    </div>
+    <div class="slogan">
+        <img src="slogan.png" alt="相信品牌的力量">
+        <span>官方域名: 16V.COM</span>
+    </div>
+    <div class="online-service">
+        <img src="online-service.png" alt="在线客服">
+    </div>
+</header>
+
+<!-- 主体内容 -->
+<main>
+    <div class="background-image">
+        <img src="background.jpg" alt="澳门威尼斯人背景图">
+    </div>
+    <div class="content-box">
+        <h2>澳门威尼斯人</h2>
+        <div class="button-group">
+            <div class="line">
+                <button class="btn">大陆线路：29ms</button>
+                <button class="btn enter-btn">点击进入</button>
+                <button class="btn add-btn">加入收藏</button>
+            </div>
+            <div class="line">
+                <button class="btn">国际线路：35ms</button>
+                <button class="btn enter-btn">点击进入</button>
+                <button class="btn add-btn">加入收藏</button>
+            </div>
+            <div class="line">
+                <button class="btn">快速注册：25ms</button>
+                <button class="btn enter-btn">点击进入</button>
+                <button class="btn add-btn">加入收藏</button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- 底部 -->
+<footer>
+    <div class="payment-icons">
+        <img src="payment-icons.png" alt="支付图标">
+    </div>
+    <div class="browser-support">
+        <img src="browser-support.png" alt="浏览器支持">
+    </div>
+    <div class="privacy-policy">
+        <a href="#">隐私政策</a>
+    </div>
+</footer>
+</body>
+</html>

@@ -15,7 +15,7 @@ hero:
   actions:
     - theme: brand
       text: RubyBook是什么?
-      link: /zh/whatsRubyBook
+      link: /zh/readme
     - theme: alt
       text: 快速开始
       link: /nav/
