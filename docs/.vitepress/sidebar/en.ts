@@ -12,7 +12,7 @@ function theoryService() :DefaultTheme.SidebarItem[] {
             collapsed: false,
             items: [
                 { text: "whats the RubyBook", link: "/whatsRubyBook" },
-                { text: "redis", link: "redis" },
+                { text: "technical_selection", link: "/technical_selection" },
                 // { text: "问答社区", link: "help" },
             ],
         },

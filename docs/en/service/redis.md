@@ -97,4 +97,10 @@ aof持久化
 appendfsync everysec
 ````
 
+## 压测命令
+````
+# 总共发送 10,000 次请求, 并发客户端数量为 50
+redis-benchmark -h 127.0.0.1 -p 6379 -n 10000 -c 50 -t get
+````
+
 ## [正式服不要轻易重启redis](https://blog.csdn.net/weixin_42350212/article/details/115395276)
