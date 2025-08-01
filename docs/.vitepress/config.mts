@@ -151,7 +151,7 @@ export default defineConfig({
       AnnouncementPlugin({
         title: 'contact info | 联系方式',
 
-        closeIcon:"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1024 1024\"><path fill=\"currentColor\" d=\"M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896m0 393.664L407.936 353.6a38.4 38.4 0 1 0-54.336 54.336L457.664 512 353.6 616.064a38.4 38.4 0 1 0 54.336 54.336L512 566.336 616.064 670.4a38.4 38.4 0 1 0 54.336-54.336L566.336 512 670.4 407.936a38.4 38.4 0 1 0-54.336-54.336z\" /></svg>",
+        closeIcon:"<?xml version=\"1.0\" standalone=\"no\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\"><svg t=\"1754058159930\" class=\"icon\" viewBox=\"0 0 1024 1024\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" p-id=\"7292\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"32\" height=\"32\"><path d=\"M512 64C264.9 64 64 264.9 64 512s200.9 448 448 448 448-200.9 448-448S759.1 64 512 64z m181 583.5l-45.3 45.3L512 556.9 376.2 692.7 331 647.5l135.8-135.8L331 375.9l45.3-45.3L512 466.4l135.8-135.8 45.3 45.3-135.8 135.8L693 647.5z\" fill=\"#f0cf1d\" p-id=\"7293\"></path></svg>",
         body: [
           { type: 'text', content: 'telegram' },
           {
