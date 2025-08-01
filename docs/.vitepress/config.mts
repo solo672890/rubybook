@@ -151,7 +151,7 @@ export default defineConfig({
       AnnouncementPlugin({
         title: 'contact info | 联系方式',
         style: `.close-icon {
-      font-size:40px !important;
+      font-size:40px !important;background-color: blue!important;
    }
   `,
         body: [
