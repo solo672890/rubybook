@@ -1,0 +1,125 @@
+#!/bin/bash
+
+# 检查文件是否存在并提示覆盖
+check_and_prompt() {
+    local file_path=$1
+    local file_name=$2
+
+    if [ -f "$file_path" ]; then
+        read -p "$file_name 已存在。是否覆盖？(y/n): " choice
+        if [ "$choice" != "y" ]; then
+            echo "跳过 $file_name 安装。"
+            return 1
+        fi
+    fi
+    return 0
+}
+
+# 检查系统架构
+ARCH=$(uname -m)
+OS=$(uname -s)
+
+case "$ARCH" in
+    x86_64)
+        ARCH_SUFFIX="x86_64"
+        ;;
+    aarch64)
+        ARCH_SUFFIX="aarch64"
+        ;;
+    arm64)
+        ARCH_SUFFIX="aarch64"
+        ;;
+    *)
+        echo "不支持的架构: $ARCH"
+        exit 1
+        ;;
+esac
+
+case "$OS" in
+    Linux)
+        OS_SUFFIX="linux"
+        ;;
+    Darwin)
+        OS_SUFFIX="mac"
+        ;;
+    *)
+        echo "不支持的操作系统: $OS"
+        exit 1
+        ;;
+esac
+
+# 选择PHP版本
+echo "请输入要安装的PHP版本 (8.1-8.4):"
+read PHP_VERSION
+
+# 验证版本号
+if [[ ! "$PHP_VERSION" =~ ^8\.[1-4]$ ]]; then
+    echo "无效的PHP版本: $PHP_VERSION"
+    exit 1
+fi
+
+# 构造下载链接
+PHP_FILENAME="php-$PHP_VERSION-$OS_SUFFIX-$ARCH_SUFFIX.tar.gz"
+PHP_URL="https://download.workerman.net/php/$PHP_FILENAME"
+
+# 检查并提示覆盖PHP
+if check_and_prompt "/usr/local/bin/php" "PHP"; then
+    # 下载并安装PHP
+    curl -# $PHP_URL -o $PHP_FILENAME
+    if [ $? -ne 0 ]; then
+        echo "下载失败: $PHP_URL"
+        exit 1
+    fi
+
+    tar -xf $PHP_FILENAME
+    sudo mv ./php /usr/local/bin
+fi
+
+# 检查并备份 php.ini
+PHP_INI_PATH="/usr/local/etc/php/php.ini"
+BACKUP_PATH="${PHP_INI_PATH}.bak"
+if [ -f "$PHP_INI_PATH" ] && [ ! -f "$BACKUP_PATH" ]; then
+    sudo cp "$PHP_INI_PATH" "$BACKUP_PATH"
+fi
+
+# 生成新的 php.ini
+echo "创建 $PHP_INI_PATH"
+sudo mkdir -p /usr/local/etc/php
+cat <<EOL | sudo tee $PHP_INI_PATH > /dev/null
+openssl.cafile=/etc/ssl/certs/ca-certificates.crt
+opcache.enable=1
+opcache.enable_cli=1
+opcache.jit=tracing
+opcache.jit_buffer_size=32M
+apc.enable_cli=1
+memory_limit=256M
+EOL
+
+# 检查并提示覆盖Composer
+if check_and_prompt "/usr/local/bin/composer" "Composer"; then
+    # 下载并安装Composer
+    echo "安装Composer..."
+    curl -# -O https://download.workerman.net/php/composer.phar
+    if [ $? -ne 0 ]; then
+        echo "下载Composer失败"
+        exit 1
+    fi
+
+    sudo mv composer.phar /usr/local/bin/composer
+    sudo chmod a+x /usr/local/bin/composer
+fi
+
+# 检查并下载 CA 证书
+if [ ! -f "/etc/ssl/certs/ca-certificates.crt" ]; then
+    echo "下载证书..."
+    sudo mkdir -p /etc/ssl/certs
+    sudo curl -#o /etc/ssl/certs/ca-certificates.crt https://download.workerman.net/php/ca-certificates.crt
+    if [ $? -eq 0 ]; then
+        echo "CA 证书已下载并保存到 /etc/ssl/certs/ca-certificates.crt"
+    else
+        echo "下载 CA 证书失败"
+        exit 1
+    fi
+fi
+
+echo "安装完成。"

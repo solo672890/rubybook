@@ -78,6 +78,7 @@ vim /etc/redis.conf
 ````
 requirepass xmshang_ipay_72921_AaBcxiebao
 ````
+systemctl restart redis
 
 ## 修改连接端口
 vim /etc/redis.conf

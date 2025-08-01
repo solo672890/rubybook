@@ -3,6 +3,41 @@ import type { NavData } from '../types'
 export const PHP_DATA: NavData[] = [
 
     {
+        title: 'github',
+        items: [
+            {
+                icon: 'https://www.buildadmin.com/images/logo.png',
+                title: 'static-php-cli',
+                badge: {
+                    text: '管理后台',
+                    type: 'warning',
+                },
+                desc: '将 PHP 代码和 PHP 解释器打包为一个文件',
+                link: 'https://www.buildadmin.com/'
+            },
+            {
+                icon: 'https://im.raingad.com/assets/img/logo.png',
+                title: 'Raingad-IM',
+                badge: {
+                    text: '高赞',
+                    type: 'danger',
+                },
+                desc: 'workerman+uniapp开发的即时聊天',
+                link: 'https://im.raingad.com/index.html#/demo'
+            },{
+                icon: 'https://camo.githubusercontent.com/573e5e50cddd7f41862577b38cddb9424115ee95fb35feccba84a48c2bde6ffb/687474703a2f2f6265616e62756e2e636f6c6170616e64612e636f6d2f6c6f676f2e6a7067',
+                title: 'Beanbun',
+                badge: {
+                    text: '高赞',
+                    type: 'danger',
+                },
+                desc: '简单可扩展的爬虫框架',
+                link: 'https://github.com/kiddyuchina/Beanbun?tab=readme-ov-file'
+            },
+
+        ]
+    },
+    {
         title: '源码',
         items: [
             {
@@ -49,26 +84,6 @@ export const PHP_DATA: NavData[] = [
                 desc: 'tp8+vue3-使用流行技术栈快速创建商业级后台管理系统',
                 link: 'https://www.buildadmin.com/'
             },
-            {
-                icon: 'https://im.raingad.com/assets/img/logo.png',
-                title: 'Raingad-IM',
-                badge: {
-                    text: '高赞',
-                    type: 'danger',
-                },
-                desc: 'workerman+uniapp开发的即时聊天',
-                link: 'https://im.raingad.com/index.html#/demo'
-            },{
-                icon: 'https://camo.githubusercontent.com/573e5e50cddd7f41862577b38cddb9424115ee95fb35feccba84a48c2bde6ffb/687474703a2f2f6265616e62756e2e636f6c6170616e64612e636f6d2f6c6f676f2e6a7067',
-                title: 'Beanbun',
-                badge: {
-                    text: '高赞',
-                    type: 'danger',
-                },
-                desc: '简单可扩展的爬虫框架',
-                link: 'https://github.com/kiddyuchina/Beanbun?tab=readme-ov-file'
-            },
-
         ]
     },
 

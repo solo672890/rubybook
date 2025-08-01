@@ -150,8 +150,10 @@ export default defineConfig({
       }),
       AnnouncementPlugin({
         title: 'contact info | 联系方式',
-        twinkle: false, //引导闪烁
-        mobileMinify:true, //移动端最小化
+        style: `.close-icon {
+      font-size:40px !important;
+   }
+  `,
         body: [
           { type: 'text', content: 'telegram' },
           {

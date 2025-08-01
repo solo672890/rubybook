@@ -1,7 +1,6 @@
 import {DefaultTheme} from 'vitepress'
-
 // 中文导航
-export const zhNav: DefaultTheme.NavItem[] = [
+const zhNav: DefaultTheme.NavItem[] = [
 {
     text: '🍉指南',
     items: [{
@@ -17,3 +16,5 @@ export const zhNav: DefaultTheme.NavItem[] = [
     {text: '导航', link: '/navigation/source_code/php'},
     {text: '更新日志', link: '/updateLog'},
 ]
+
+export {zhNav};

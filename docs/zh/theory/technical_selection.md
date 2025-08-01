@@ -144,34 +144,87 @@ executionTime(function () use ($request){
     }
 });
 
-同步投递耗时： 37.892000秒   
+同步生产耗时： 37.892000秒   
 内存使用: 196.765625 kb     
-平均每秒入队`2631`次
+平均每秒生产`2631`次
 ----------------------------------------------------
 
-异步投递耗时： 1.125000秒秒   
+异步生产耗时： 1.125000秒秒   
 内存使用: 68799.460938 kb     
-平均每秒入队`88888`次
+平均每秒生产`88888`次
+----------------------------------------------------
+
+消费耗时看 `投递到远程队列` 他们机器配置都是一样的
 
 ```
 
 ```php [投递到远程队列]
-# 投递到另一台同样配置的虚拟机,请求的是内网ip,增加了远程连接开销,redis连接开销
-executionTime(function () use ($request){
-    for ($i=0;$i<20000;$i++) {
-        //虚拟机配置测不了10万,会耗干socket连接
-        RpcClient::instance('Report','log')->request();
-    }
-});
+# 投递到另一台同样配置的虚拟机,请求的是内网ip,增加了远程连接开销
+$redis=\support\Redis::connection('default');
+        list($usec, $sec) = explode(' ', microtime());
+        $millisecond = (int) (($sec * 1000) + ($usec * 1000));
+        var_dump("当前毫秒时间戳：$millisecond");
+        executionTime(function () use ($request,$redis){
+            for ($i=0;$i<100000;$i++) {
+                $queue = 'log';
+                $data = ['to' => 'tom@gmail.com', 'content' => 'hello','i'=>$i];
+                $queue_waiting = '{redis-queue}-waiting';
+                $now = time();
+                $package_str = json_encode([
+                    'id'       => rand(),
+                    'time'     => $now,
+                    'delay'    => 0,
+                    'attempts' => 0,
+                    'queue'    => $queue,
+                    'data'     => $data
+                ]);
+                $redis->lPush($queue_waiting.$queue, $package_str);
+            }
+        });
 
-同步投递耗时： 25.647000秒   
-内存使用:  4.343750 kb     
-平均每秒入队`780`次
+生产耗时： 41.387000秒   
+内存使用:   3.007812 kb     
+平均每秒生产`2416`次
 ----------------------------------------------------
+消费耗时：  100.72秒   
+内存占用峰值增加: 7.72MB
+平均每秒消费 `992` 次
+```
 
-异步投递耗时：  15.780000秒   
-内存使用: 14.343750 kb     
-平均每秒入队 `1267` 次
+```php [投递到远程多个队列]
+# 一个order队列,一个log队列,均在队列系统服务器中,每个队列都有两个消费进程等候
+$redis=\support\Redis::connection('default');
+        list($usec, $sec) = explode(' ', microtime());
+        $millisecond = (int) (($sec * 1000) + ($usec * 1000));
+        var_dump("当前毫秒时间戳：$millisecond");
+        executionTime(function () use ($request,$redis){
+            for ($i=0;$i<100000;$i++) {
+                $queueOrder = 'order';
+                $queueLog = 'log';
+                $data = ['to' => 'tom@gmail.com', 'content' => 'hello','i'=>$i];
+                $queue_waiting = '{redis-queue}-waiting';
+                $now = time();
+                $package_str = json_encode([
+                    'id'       => rand(),
+                    'time'     => $now,
+                    'delay'    => 0,
+                    'attempts' => 0,
+                    //'queue'    => $queue,
+                    'data'     => $data
+                ]);
+                $redis->lPush($queue_waiting.$queueLog, $package_str);
+                $redis->lPush($queue_waiting.$queueOrder, $package_str);
+            }
+        });
+
+生产耗时：  90.21秒   
+内存使用:   3.007812 kb     
+平均每秒生产`1108`次 
+----------------------------------------------------
+`log`   队列消费耗时：  100.954秒   平均每秒消费 `990` 次
+`order` 队列消费耗时：  101.082秒   平均每秒消费 `989` 次
+内存占用峰值增加: 17.38MB
+
 ```
 
 
@@ -183,16 +236,17 @@ executionTime(function () use ($request){
 ::: details 点我查看总结
 **优点**
 
-`本地队列投放速度还行,没有额外的部署,维护,学习成本. 上手快,开发快,稳定,易修改,上线快`
+`生产速度还行,没有额外的部署,维护,学习成本. 上手快,开发快,稳定,易修改,上线快`
 
 **缺点**
 
-`远程同步投递效果不佳,加上项目业务逻辑耗时,可能每秒入队速度只有400次,而且使用异步队列需要非常慎重,消息会写入内存执行,他不像kafka,RabbitMQ那样有持久化机制.重启会丢失消息`
+`受机器配置限制,消费速度效果表现很普通,
+而且使用异步队列需要非常慎重,消息会写入内存执行,他不像kafka,RabbitMQ那样有持久化机制.重启会丢失消息.同步则不会`
 
 
 **结论**
 
-`适合中小项目,非高频交易项目,可以通过2台分布式队列服务器,把同步队列入队速度干到每秒1000.
+`适合中小项目,非高频交易项目,可以通过2台分布式队列服务器,和提升配置,把同步队列入队速度干到每秒2000+.当然,具体耗时得取决你的业务逻辑.
 以前在某论坛,听到某盘项目,800万用户+,巅峰时期订单也就每秒500+
 `
 :::

@@ -15,6 +15,15 @@ editLink: true
 
 ## 常用命令
 
+### 系统查看
+````
+cat /etc/os-release
+
+# 机械 or 固态硬盘,输出0 代表是机械硬盘
+lsblk -d -o name,rota
+````
+
+
 ### 防火墙端口增删查
 
 ::: code-group

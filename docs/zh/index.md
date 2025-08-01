@@ -35,7 +35,13 @@ features:
     title: 轻量级思维-
     details: 聚焦中小型项目特性，避免过度设计与复杂架构。
 ---
+<script setup>
+import { PHP_DATA } from '/.vitepress/theme/untils/navigation_data/php';
+import { zhNav } from '/.vitepress/navbar/zh';
 
+zhNav.push({text: '联系我', link: '/navigation/source_code/php'})
+console.log(zhNav)
+</script>
 <HomeUnderline />
 
 <confetti />

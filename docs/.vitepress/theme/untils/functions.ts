@@ -17,3 +17,12 @@ export function countWord(data: string) {
     }
     return count
 }
+
+export function isMobile() {
+    console.log(navigator)
+    if (typeof navigator === 'undefined') {
+        return false; // 或者根据你的逻辑返回 null / undefined
+    }
+
+    // return navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i);
+}

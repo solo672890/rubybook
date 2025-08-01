@@ -5,6 +5,8 @@ export const zhSidebar: DefaultTheme.Sidebar = {
     "/navigation/": { base: "/navigation/", items: sidebarNavigation() },
 }
 
+
+
 function theoryService() :DefaultTheme.SidebarItem[] {
     return [
         {
@@ -14,6 +16,7 @@ function theoryService() :DefaultTheme.SidebarItem[] {
                 { text: "RubyBook是什么", link: "whatsRubyBook" },
                 { text: "中小型it项目技术选型", link: "technical_selection" },
                 { text: "如何设计每天一亿订单的订单系统?", link: "order_framework_design" },
+                { text: "如何设计每天10万订单的c2c系统?", link: "order1_framework_design" },
                 // { text: "如何设计每天一万订单的项目架构?", link: "order1_framework_design" },
                 // { text: "问答社区", link: "help" },
             ],
@@ -28,6 +31,9 @@ function sidebarService() :DefaultTheme.SidebarItem[] {
             items: [
                 { text: "Linux", link: "linux" },
                 { text: "redis", link: "redis" },
+                { text: "mysql", link: "mysql" },
+                { text: "php", link: "php" },
+                { text: "nginx", link: "nginx" },
                 // { text: "问答社区", link: "help" },
             ],
         },
