@@ -239,8 +239,74 @@ port=33445
 systemctl restart mysqld
 ````
 
+## mysql监控
+::: details 查看
+### 查看允许的最大连接数(客户端同时请求)
+````
+show variables like '%max_connection%';
+````
+### 查看当前已建立的连接数(即活跃连接数)
+````
+show global status like 'Threads_connected';
+````
+### 连接健康查看
+````
+# 如果大于0.8 表示压力有点大了,应该要触发警告
+const res=Threads_connected / max_connections
+if(res > 0.8){
+    //todo 触发警报
+}
+````
+### 找出阻塞时间超过 30 秒的“锁等待”关系
+`谁（阻塞线程）执行了什么 SQL（阻塞SQL）,导致谁（被阻塞线程）的 SQL（被阻塞SQL）被卡住,已经阻塞了多久（阻塞时间，单位：秒）`
+````
+SELECT 
+  r.trx_mysql_thread_id AS '被阻塞线程',
+  r.trx_query AS '被阻塞SQL',
+  b.trx_mysql_thread_id AS '阻塞线程',
+  b.trx_query AS '阻塞SQL',
+  ROUND(TIME_TO_SEC(TIMEDIFF(NOW(), b.trx_started)), 0) AS '阻塞时间(秒)'
+FROM 
+  performance_schema.data_lock_waits w
+JOIN information_schema.innodb_trx b ON w.BLOCKING_ENGINE_TRANSACTION_ID = b.trx_id
+JOIN information_schema.innodb_trx r ON w.REQUESTING_ENGINE_TRANSACTION_ID = r.trx_id
+WHERE 
+  TIME_TO_SEC(TIMEDIFF(NOW(), b.trx_started)) > 30;
+  
+//   SHOW ENGINE INNODB STATUS;
+//  在输出中查找 TRANSACTIONS 部分，会显示：'当前运行的事务','锁等待信息','阻塞关系'
+````
+###  锁等待超时时间(InnoDB存储引擎)
+`谁（阻塞线程）执行了什么 SQL（阻塞SQL）,导致谁（被阻塞线程）的 SQL（被阻塞SQL）被卡住,已经阻塞了多久（阻塞时间，单位：秒）`
+````
+SHOW VARIABLES LIKE 'innodb_lock_wait_timeout';
+//输出 innodb_lock_wait_timeout=50 表示InnoDB 锁等待的超时时间为 50 秒,超过就会被中断
+//高并发场景要调至10秒,快速释放锁.
+//如果执行长事务,比如所有的代理和会员月结算,要调至60秒及以上,避免正常操作被误杀
+````
+###  当前正在执行的线程数量/数据库并发请求的数量
+````
+show global status LIKE    'Threads_running';
+````
+###  获取有性能问题的sql
+````
+SELECT id,user,host,DB,command, time,state,info FROM information_schema.PROCESSLIST WHERE TIME>=60;
+
+# 主要用于 性能监控和故障排查，例如：
+    找出慢查询（Long-running Queries）,time >= 60 且 command = 'Query' 的连接，可能是慢 SQL。查看 info 字段，确认是哪个 SQL 执行太久。
+# 发现空闲连接（Idle Connections）    
+    command = 'Sleep' 且 time 很大（如几小时），说明应用未正确关闭连接，可能导致连接池耗尽。
+# 识别阻塞或锁等待
+    state = 'Locked' 或 Waiting for table metadata lock，可能表示锁竞争
+# 终止长时间运行的连接（谨慎操作）    
+    KILL 123; -- 终止 ID 为 123 的连接
+````
+
+:::
+
+
 ## 压测
-使用 Sysbench 压测
+`使用 Sysbench 压测,测试环境:30G_SSD  8G内存 2CPU aws云服务器`
 ::: details 点我查看
 
 ::: code-group
@@ -288,9 +354,6 @@ LimitNOFILE=65536
 ````
 
 ```` sh [开始测试]
-#配置
-30G_SSD  8G内存 2CPU aws云服务器
-
 # 此命令将创建 10 张表，每张表包含 1000000 条记录。
 sysbench \
   --db-driver=mysql \
@@ -303,17 +366,15 @@ sysbench \
   oltp_read_write prepare
 
 # 混合读写测试,模拟200个虚拟客户端同时发起请求,持续60s
-# --oltp_read_write 读写混合模式   
-    # --oltp_point_select    只做主键查询           测试QPS,缓存性能
-    # --oltp_write_only      写操作集合（无读）      写性能、I/O 压力测试
-    # --oltp_insert          仅插入                插入吞吐、日志写入测试
-    # --oltp_read_write      读写混合（默认）       综合 OLTP 性能评估
+# oltp_read_write 读写混合模式   
+    # oltp_point_select    只做主键查询                               测试QPS,缓存性能
+    # oltp_write_only      混合写操作,无读(INSERT+UPDATE+DELETE)      写性能、I/O 压力测试
+    # oltp_insert          仅执行 INSERT                             插入吞吐、日志写入测试
+    # oltp_read_write      读写混合（默认）                            综合 OLTP 性能评估
 
 # --threads=200              模拟200个并发线程连接,启动 200 个工作线程 
 # --report-interval          每 x 秒报告一次中间结果
-# 持续测试60s
-
-
+# 持续测试120s
 
 sysbench \
   --db-driver=mysql \
@@ -324,48 +385,131 @@ sysbench \
   --tables=10 \
   --table_size=1000000 \
   --threads=100 \
-  --time=120 \
+  --time=60 \
   --report-interval=10 \
-  oltp_read_write run
+  oltp_point_select run
 ````
 
-```` sh [结果]
-#  tps(每秒处理事务的数量): 498.70
-[ 10s ] thds: 100 tps: 498.70 qps: 10148.94 (r/w/o: 7113.75/2027.99/1007.20) lat (ms,95%): 297.92 err/s: 0.00 reconn/s: 0.00
-[ 20s ] thds: 100 tps: 535.92 qps: 10686.55 (r/w/o: 7494.85/2119.77/1071.94) lat (ms,95%): 272.27 err/s: 0.00 reconn/s: 0.00
-[ 30s ] thds: 100 tps: 535.61 qps: 10709.72 (r/w/o: 7496.98/2141.52/1071.21) lat (ms,95%): 287.38 err/s: 0.00 reconn/s: 0.00
-[ 40s ] thds: 100 tps: 529.50 qps: 10591.36 (r/w/o: 7413.07/2119.29/1059.00) lat (ms,95%): 257.95 err/s: 0.00 reconn/s: 0.00
-[ 50s ] thds: 100 tps: 532.60 qps: 10633.09 (r/w/o: 7438.79/2129.30/1065.00) lat (ms,95%): 272.27 err/s: 0.00 reconn/s: 0.00
-[ 60s ] thds: 100 tps: 547.10 qps: 10979.57 (r/w/o: 7685.78/2199.29/1094.50) lat (ms,95%): 272.27 err/s: 0.00 reconn/s: 0.00
+```` sh [混合读写测试]
+#  tps(每秒处理事务的数量): 503.16 - 544.37,
+[ 10s ] thds: 100 tps: 503.16 qps: 10204.60 (r/w/o: 7154.94/2033.44/1016.22) lat (ms,95%): 297.92 err/s: 0.00 reconn/s: 0.00
+[ 20s ] thds: 100 tps: 538.82 qps: 10773.29 (r/w/o: 7554.44/2141.10/1077.75) lat (ms,95%): 292.60 err/s: 0.00 reconn/s: 0.00
+[ 30s ] thds: 100 tps: 539.00 qps: 10763.86 (r/w/o: 7529.67/2156.49/1077.70) lat (ms,95%): 272.27 err/s: 0.00 reconn/s: 0.00
+[ 40s ] thds: 100 tps: 556.70 qps: 11178.07 (r/w/o: 7821.98/2242.59/1113.50) lat (ms,95%): 272.27 err/s: 0.00 reconn/s: 0.00
+[ 50s ] thds: 100 tps: 540.20 qps: 10771.55 (r/w/o: 7544.53/2146.61/1080.40) lat (ms,95%): 267.41 err/s: 0.00 reconn/s: 0.00
+[ 60s ] thds: 100 tps: 533.20 qps: 10693.02 (r/w/o: 7479.02/2147.40/1066.60) lat (ms,95%): 262.64 err/s: 0.00 reconn/s: 0.00
+[ 70s ] thds: 100 tps: 540.40 qps: 10785.69 (r/w/o: 7550.10/2154.90/1080.70) lat (ms,95%): 267.41 err/s: 0.00 reconn/s: 0.00
+[ 80s ] thds: 100 tps: 545.20 qps: 10894.29 (r/w/o: 7631.09/2172.80/1090.40) lat (ms,95%): 277.21 err/s: 0.00 reconn/s: 0.00
+[ 90s ] thds: 100 tps: 528.00 qps: 10581.59 (r/w/o: 7401.89/2123.70/1056.00) lat (ms,95%): 308.84 err/s: 0.00 reconn/s: 0.00
+[ 100s ] thds: 100 tps: 546.80 qps: 10919.42 (r/w/o: 7648.51/2177.30/1093.60) lat (ms,95%): 287.38 err/s: 0.00 reconn/s: 0.00
+[ 110s ] thds: 100 tps: 546.40 qps: 10949.99 (r/w/o: 7660.10/2197.10/1092.80) lat (ms,95%): 282.25 err/s: 0.00 reconn/s: 0.00
+[ 120s ] thds: 100 tps: 544.37 qps: 10885.47 (r/w/o: 7622.43/2174.39/1088.65) lat (ms,95%): 282.25 err/s: 0.00 reconn/s: 0.00
 SQL statistics:
     queries performed:
-        read:                            446530
-        write:                           127580
-        other:                           63790
-        total:                           637900
-    transactions:                        31895  (530.24 per sec.)
-    queries:                             637900 (10604.74 per sec.)
+        read:                            906108     # 120秒产生的查询次数   
+        write:                           258888     # 120秒产生的写入次数  
+        other:                           129444     # 120秒产生的其他操作,比如commit
+        total:                           1294440
+    transactions:                        64722  (538.59 per sec.)       # 总事务数64722,每秒538.59
+    queries:                             1294440 (10771.78 per sec.)
     ignored errors:                      0      (0.00 per sec.)
     reconnects:                          0      (0.00 per sec.)
 
 General statistics:
-    total time:                          60.1508s
-    total number of events:              31895
+    total time:                          120.1679s
+    total number of events:              64722
 
 Latency (ms):
-         min:                                    7.53
-         avg:                                  188.38
-         max:                                  618.84
-         95th percentile:                      277.21
-         sum:                              6008309.86
+         min:                                    6.14       # 最小延迟 毫秒
+         avg:                                  185.52       # 平均延迟 毫秒
+         max:                                  788.61       # 最大延迟 毫秒
+         95th percentile:                      282.25       # 95%延迟均 ≤ 282.25毫秒
+         sum:                             12007326.09
 
 Threads fairness:
-    events (avg/stddev):           318.9500/5.35
-    execution time (avg/stddev):   60.0831/0.04
+    events (avg/stddev):           647.2200/8.58
+    execution time (avg/stddev):   120.0733/0.05
 
-
+总结:该mysql服务器在100虚拟客户端下,能极限处理544.37个事务
+建议日常控制在 80%的事务左右(即435),
+不要让系统长期过载
 
 ````
+````sh[写入测试]
+[ 10s ] thds: 100 tps: 2099.08 qps: 12633.58 (r/w/o: 0.00/8425.62/4207.96) lat (ms,95%): 74.46 err/s: 0.00 reconn/s: 0.00
+[ 20s ] thds: 100 tps: 2161.38 qps: 12973.75 (r/w/o: 0.00/8651.10/4322.65) lat (ms,95%): 71.83 err/s: 0.00 reconn/s: 0.00
+[ 30s ] thds: 100 tps: 2251.01 qps: 13504.25 (r/w/o: 0.00/9001.93/4502.32) lat (ms,95%): 69.29 err/s: 0.00 reconn/s: 0.00
+[ 40s ] thds: 100 tps: 2154.59 qps: 12908.66 (r/w/o: 0.00/8599.47/4309.19) lat (ms,95%): 74.46 err/s: 0.00 reconn/s: 0.00
+[ 50s ] thds: 100 tps: 2251.39 qps: 13530.76 (r/w/o: 0.00/9028.08/4502.69) lat (ms,95%): 75.82 err/s: 0.00 reconn/s: 0.00
+[ 60s ] thds: 100 tps: 2184.49 qps: 13107.94 (r/w/o: 0.00/8739.36/4368.58) lat (ms,95%): 73.13 err/s: 0.00 reconn/s: 0.00
+[ 70s ] thds: 100 tps: 2149.62 qps: 12879.79 (r/w/o: 0.00/8580.06/4299.73) lat (ms,95%): 74.46 err/s: 0.00 reconn/s: 0.00
+[ 80s ] thds: 100 tps: 2202.30 qps: 13232.09 (r/w/o: 0.00/8827.60/4404.50) lat (ms,95%): 71.83 err/s: 0.00 reconn/s: 0.00
+[ 90s ] thds: 100 tps: 2091.13 qps: 12522.16 (r/w/o: 0.00/8339.91/4182.25) lat (ms,95%): 75.82 err/s: 0.00 reconn/s: 0.00
+[ 100s ] thds: 100 tps: 2093.28 qps: 12568.49 (r/w/o: 0.00/8382.03/4186.46) lat (ms,95%): 75.82 err/s: 0.00 reconn/s: 0.00
+[ 110s ] thds: 100 tps: 2099.62 qps: 12587.90 (r/w/o: 0.00/8388.86/4199.03) lat (ms,95%): 74.46 err/s: 0.00 reconn/s: 0.00
+[ 120s ] thds: 100 tps: 2062.70 qps: 12395.60 (r/w/o: 0.00/8270.00/4125.60) lat (ms,95%): 73.13 err/s: 0.00 reconn/s: 0.00
+SQL statistics:
+    queries performed:
+        read:                            0
+        write:                           1032436
+        other:                           516218
+        total:                           1548654
+    transactions:                        258109 (2149.52 per sec.)
+    queries:                             1548654 (12897.13 per sec.)
+    ignored errors:                      0      (0.00 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+General statistics:
+    total time:                          120.0758s
+    total number of events:              258109
+
+Latency (ms):
+         min:                                    3.62
+         avg:                                   46.50
+         max:                                  205.64
+         95th percentile:                       74.46
+         sum:                             12002149.31
+
+Threads fairness:
+    events (avg/stddev):           2581.0900/17.52
+    execution time (avg/stddev):   120.0215/0.02
+````
+````sh[查询测试]
+[ 10s ] thds: 100 tps: 18248.20 qps: 18248.20 (r/w/o: 18248.20/0.00/0.00) lat (ms,95%): 7.70 err/s: 0.00 reconn/s: 0.00
+[ 20s ] thds: 100 tps: 18874.10 qps: 18874.10 (r/w/o: 18874.10/0.00/0.00) lat (ms,95%): 6.32 err/s: 0.00 reconn/s: 0.00
+[ 30s ] thds: 100 tps: 18811.80 qps: 18811.80 (r/w/o: 18811.80/0.00/0.00) lat (ms,95%): 6.67 err/s: 0.00 reconn/s: 0.00
+[ 40s ] thds: 100 tps: 18552.74 qps: 18552.74 (r/w/o: 18552.74/0.00/0.00) lat (ms,95%): 6.91 err/s: 0.00 reconn/s: 0.00
+[ 50s ] thds: 100 tps: 18733.95 qps: 18733.95 (r/w/o: 18733.95/0.00/0.00) lat (ms,95%): 6.67 err/s: 0.00 reconn/s: 0.00
+[ 60s ] thds: 100 tps: 18658.90 qps: 18658.90 (r/w/o: 18658.90/0.00/0.00) lat (ms,95%): 6.79 err/s: 0.00 reconn/s: 0.00
+SQL statistics:
+    queries performed:
+        read:                            1119259
+        write:                           0
+        other:                           0
+        total:                           1119259
+    transactions:                        1119259 (18642.56 per sec.)
+    queries:                             1119259 (18642.56 per sec.)
+    ignored errors:                      0      (0.00 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+General statistics:
+    total time:                          60.0363s
+    total number of events:              1119259
+
+Latency (ms):
+         min:                                    0.06
+         avg:                                    5.36
+         max:                                  414.12
+         95th percentile:                        6.79
+         sum:                              5998772.61
+
+Threads fairness:
+    events (avg/stddev):           11192.5900/100.86
+    execution time (avg/stddev):   59.9877/0.01
+
+````
+
+
 ````sh[清理测试数据]
 
 sysbench \

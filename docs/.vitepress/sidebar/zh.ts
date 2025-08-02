@@ -2,6 +2,7 @@ import { DefaultTheme } from 'vitepress'
 export const zhSidebar: DefaultTheme.Sidebar = {
     "/theory/": { base: "/theory/", items: theoryService() },
     "/service/": { base: "/service/", items: sidebarService() },
+    "/web/": { base: "/web/", items: webNavigation() },
     "/navigation/": { base: "/navigation/", items: sidebarNavigation() },
 }
 
@@ -16,7 +17,7 @@ function theoryService() :DefaultTheme.SidebarItem[] {
                 { text: "RubyBook是什么", link: "whatsRubyBook" },
                 { text: "中小型it项目技术选型", link: "technical_selection" },
                 { text: "如何设计每天一亿订单的订单系统?", link: "order_framework_design" },
-                { text: "如何设计每天10万订单的c2c系统?", link: "order1_framework_design" },
+                { text: "如何设计每天20万订单的c2c系统?", link: "order1_framework_design" },
                 // { text: "如何设计每天一万订单的项目架构?", link: "order1_framework_design" },
                 // { text: "问答社区", link: "help" },
             ],
@@ -32,18 +33,16 @@ function sidebarService() :DefaultTheme.SidebarItem[] {
                 { text: "Linux", link: "linux" },
                 { text: "redis", link: "redis" },
                 { text: "mysql", link: "mysql" },
-                { text: "php", link: "php" },
                 { text: "nginx", link: "nginx" },
-                // { text: "问答社区", link: "help" },
             ],
         },
         {
-            text: "快速开始",
+            text: "语言",
             collapsed: false,
             items: [
-                { text: "安装", link: "install" },
-                { text: "目录结构", link: "directory" },
-                { text: "简单示例", link: "tutorial" },
+                { text: "php", link: "php" },
+                { text: "go", link: "go" },
+
             ],
         },
 
@@ -63,6 +62,21 @@ function sidebarNavigation(): DefaultTheme.SidebarItem[] {
                 { text: "娱乐", link: "source_code/audio" },
                 { text: "外语", link: "source_code/foreign" },
                 { text: "学习论坛", link: "source_code/learning_forum" },
+            ],
+        },
+
+
+    ];
+}
+
+function webNavigation(): DefaultTheme.SidebarItem[] {
+    return [
+        {
+            text: "web端",
+            collapsed: false,
+            items: [
+                { text: "node", link: "node" },
+
             ],
         },
 

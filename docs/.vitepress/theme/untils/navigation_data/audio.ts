@@ -8,7 +8,12 @@ export const AUDIO_DATA: NavData[] = [
                 icon: 'https://t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.qwnull.com&size=256',
                 title: '七味',
                 desc: '最新电影/电视剧在线观看',
-                link: 'https://www.qn63.com//'
+                link: 'https://www.qn63.com/'
+            },{
+                icon: 'https://www.cilixiong.org/skin/cili/logo.png?0619',
+                title: '磁力熊',
+                desc: '纯净的1080P高分电影网站',
+                link: 'https://www.cilixiong.org/'
             },
             {
                 icon: 'https://www.fanjuya.com/statics/logo.png',
