@@ -18,10 +18,10 @@ editLink: true
 
 ::: details 查看
 1 解压后创建你的nodejs和dev目录,并创建以下两个文件
-![LOGO](/public/document/node1.jpg)
+![LOGO](/document/node1.jpg)
 
 2 把nvm-noinstall.zip解压后的文件,复制到nvm文件里,以管理员的身份打开install.cmd,回车后会弹出txt文件
-![LOGO](/public/document/node2.jpg)
+![LOGO](/document/node2.jpg)
 
 3 在setting.txt里按照如下填写第一步新创建的2个文件地址
 root: E:\nodejs\dev\nvm
@@ -34,8 +34,8 @@ npm_mirror:npm.taobao.org/mirrors/npm/
 4 系统环境变量配置,2个环境变量
 NVM_HOME:E:\nodejs\dev\nvm
 NVM_SYMLINK:E:\nodejs\dev\nodejs
-![LOGO](/public/document/node3.jpg)
-![LOGO](/public/document/node4.jpg)
+![LOGO](/document/node3.jpg)
+![LOGO](/document/node4.jpg)
 
 nvm(Node版本管理工具)安装完毕
 

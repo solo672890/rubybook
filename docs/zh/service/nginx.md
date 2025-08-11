@@ -111,9 +111,13 @@ server {
     
     # 代理vue页面
     location / {
-    	try_files $uri $uri/ /index.html;
+    	try_files $uri $uri/ /index.html; #本地代理
     }
-
+    # vue代理前端自己加的api到远程
+    #location /api/ {
+    #    proxy_pass http://18.166.62.179:15215/; 
+    #}
+    
     # 拒绝访问所有以 .php 结尾的文件
     location ~ \.php$ {
         return 404;

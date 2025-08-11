@@ -18,7 +18,8 @@ function theoryService() :DefaultTheme.SidebarItem[] {
                 { text: "中小型it项目技术选型", link: "technical_selection" },
                 { text: "如何设计每天一亿订单的订单系统?", link: "order_framework_design" },
                 { text: "如何设计每天20万订单的c2c系统?", link: "order1_framework_design" },
-                { text: "分库分表后,客户端如何下拉翻页?", link: "order2_framework_design" },
+                { text: "分表后,客户端不按月份翻页", link: "order2_framework_design" },
+                { text: "如何在团队里使用git?", link: "how_to_use_git" },
 
             ],
         },

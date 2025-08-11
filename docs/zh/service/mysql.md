@@ -333,6 +333,7 @@ max_connections = 1200
 # 预处理语句数量,客户端请求时,大约每个预处理语句会占用3kb内存,提高重复查询性能、减少网络传输
 max_prepared_stmt_count = 50000
 # 用于缓存数据和索引的内存大小,如果服务器只做数据库服务,可以设置到内存的75%,否则设置50%即可,过大的buffer pool可能导致系统崩溃
+# 该参数不要乱设置,如果mysql和其他服务同处于一台linux上,则不要设置过大,因为我已经崩溃过.
 innodb_buffer_pool_size=6G
 
 # 系统资源检查
@@ -521,4 +522,18 @@ sysbench \
   oltp_read_write \
   cleanup
 ````
+:::
+
+## sql性能测试
+`环境 redhat9 4核8g 30g_ssd aws云服务器`
+### union all
+
+::: details
+`5500万条数据,9表联查,200条查询结果,全走索引,耗时0.078s`
+
+`本来想搞个三亿数据测试一下的,但是磁盘不够了`
+
+`如果使用魔改mysql或者oracle数据库,这个结果会更好`
+
+![union all测试](/document/mysqlTest_unionAll.png)
 :::

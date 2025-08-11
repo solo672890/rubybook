@@ -65,6 +65,28 @@ netstat -ntlp
 ````
 fuser -v -n tcp 3306
 ````
+### 自定义命令
+````
+vim /root/.bashrc
+# 手动追加
+alias php='/usr/local/bin/php'
+
+source /root/.bashrc
+````
+
+### 压缩相关命令
+````
+tar -xvf xxx.tar
+unzip xxx.zip
+
+source /root/.bashrc
+````
+
+### lrzsz
+`这是一款终端文件上传工具`
+````
+yum -y install lrzsz
+````
 
 ### top & free -h
 > **top命令会对 Linux 系统中对当前系统资源和进程运行状态的实时监控信息**
