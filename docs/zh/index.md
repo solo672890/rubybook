@@ -26,7 +26,7 @@ features:
   - icon: 🚀
     title: 资源分享
     details: 各种资源....懂的都懂,不懂的说了也不懂.
-    link: 🚀
+    link: /navigation/source_code/audio
     linkText: go
   - icon: 🗄️
     title: 代码即文档

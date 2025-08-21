@@ -27,7 +27,7 @@ features:
   - icon: 🚀
     title: resource sharing
     details: Various resources I understand what I understand, but I don't understand what I don't understand
-    link: 🚀
+    link: /en/navigation/source_code/audio
     linkText: go
   - icon: 🗄️
     title: code as document

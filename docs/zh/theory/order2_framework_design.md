@@ -76,8 +76,105 @@ comment: true
 
 从 union all结果集中做如下操作
 
-1.缓存第一页,避免客户端反复刷新
-2.缓存下一页,给用户更好的体验
+1.缓存第一页2秒,避免客户端反复刷新
+2.缓存下一页5秒,给用户更好的体验
+
+## 追加
+又过了两天,我思来想去,还是补上这一部分内容.
+
+如果有哪个天杀的甲方,非要你像淘宝,pdd一样,那我就只有祭出这个方案了.
+
+准备一个用户订单记录表,大概格式如下,每当订单完结后,在对应的月份增加值
+
+
+| id | user_id | ext                                                           |
+ |:--:|:-------:|---------------------------------------------------------------|
+| 1  |  1001   | `{"202508":5,"202507":24,"202503":39,"202502":1,"202408":11}` |
+| 2  |  1002   | ...                                                           |
+| 3  |  1003   | ...                                                           |
+| 4  |  1004   | ...                                                           |
+
+
+id=1,代表202508的时候,用户产生了5笔完结的订单.
+
+每页20条数据,我们可以计算出8月份+7月份有29条数,于是我们就有如下sql:
+
+````
+# 第一页,8月份全部取,7月份取15条
+SELECT order_no, user_id FROM order_202508 WHERE user_id = 1001
+UNION ALL
+(
+    SELECT order_no, user_id 
+    FROM order_202507 
+    WHERE user_id = 1001 
+    ORDER BY id DESC  
+    LIMIT 15
+);
+
+# 第2页,7月份已经被取了15条,所以取剩下的9条,然后再取3月份的11条
+(
+    SELECT order_no, user_id FROM order_202508 
+    WHERE user_id = 1001 
+    ORDER BY id DESC  LIMIT 15,9
+)
+UNION ALL
+(
+    SELECT order_no, user_id FROM order_202507 
+    WHERE user_id = 1001 
+    ORDER BY id DESC  
+    LIMIT 0,11
+);
+# 第3页,以此类推
+````
+
+### 疑问1
+8月份如果有x条未完结的订单,此时limit 0,15将不再准确,该如何查询
+
+通过分析淘宝交易未结束的订单,最迟15天会自动交易关闭.所以先计算出交易未结束的订单
+```
+const dateD=8; //今天8号
+
+const day=0; //交易未结束的订单的数量
+
+if(dateD>15){
+    day=SELECT count(id) from order_202508 WHERE user_id = 1001 where status='交易未结束';
+}else{
+    day=SELECT SUM(cnt) AS total_unfinished_orders
+FROM (
+    SELECT COUNT(id) AS cnt FROM order_202508 WHERE user_id = 1001 AND status = '交易未结束'
+    UNION ALL
+    SELECT COUNT(id) AS cnt FROM order_202507 WHERE user_id = 1001 AND status = '交易未结束'
+) t;    
+
+假设 day=6;  // 有6条订单未完结.不可能会超过10条.
+
+order_202508,order_202507 那么共有24+5+6=35条数据
+
+// 最终查表sql 第一页
+(
+    SELECT order_no, user_id FROM order_202508 WHERE user_id = 1001
+    UNION ALL
+    SELECT order_no, user_id FROM order_202507 WHERE user_id = 1001
+)
+order by id desc LIMIT 0, 20;
+
+// 最终查表sql 第2页
+(SELECT order_no, user_id FROM order_202507 WHERE user_id = 1001 ORDER BY id DESC  LIMIT 21,15)
+union all 
+(SELECT order_no, user_id FROM order_202503 WHERE user_id = 1001 ORDER BY id DESC  LIMIT 0,5)
+} order by id desc;
+
+// 最终查表sql 第3页
+SELECT order_no, user_id FROM order_202503 WHERE user_id = 1001 ORDER BY id DESC  LIMIT 6,20
+order by id desc;
+
+...以此类推,自行用算法实现
+
+
+```
+
+**此办法会多查询两条sql,但是效率并不差.**
+
 
 
 

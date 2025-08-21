@@ -154,8 +154,41 @@ server {
 }
 ````
 :::
+## 日志格式配置-logrotate
+::: details 点我查看
 
-## 日志格式配置
+`vim /etc/logrotate.d/nginx`
+````
+/var/log/nginx/*.log {
+    daily
+    size 10M
+    rotate 30
+    missingok
+    notifempty
+    compress
+    delaycompress
+    create 0640 www-data adm
+    sharedscripts
+    dateext
+    dateformat %Y%m%d_
+    postrotate
+        if [ -f /var/run/nginx.pid ]; then
+            kill -USR1 `cat /var/run/nginx.pid`
+        fi
+    endscript
+}
+````
+````
+# 测试配置是否生效（dry run）
+sudo logrotate -d /etc/logrotate.d/nginx
+````
+````
+# 强制执行一次轮转（可选）
+sudo logrotate -f /etc/logrotate.d/nginx
+````
+:::
+
+## 日志格式配置-shell
 ::: details 点我查看
 
 ```ts{12-13}

@@ -36,23 +36,24 @@ const DATA=[
 <br>
 
 ## 安装
+::: details
 <br>
 如果要集群部署或者测试,还是docker比较方便,建议用docker
 
-### 1 创建mysql用户组
+1 创建mysql用户组
 ````
 groupadd mysql    #创建mysql
 useradd -r -g mysql mysql    #增加mysql用户并让它属于mysql用户组
 ````
 
-### 2.安装必备包
+2.安装必备包
 ````
 yum -y install libaio
 yum install openssl-devel
 ````
 
 
-### 3. 查询是否安装 mariadb 避免冲突
+3. 查询是否安装 mariadb 避免冲突
 ````
 rpm -qa | grep mariadb                  yum -y remove mariadb*
 rpm -qa | grep -i mysql   # -i 忽略大小写                 
@@ -60,8 +61,7 @@ yum -y remove mysql* # 删除旧版,如果有
 find / -name mysql    #找到相关的自行删除
 rm -rf /etc/my.cnf.d
 ````
-
-### 4.开始安装 mysql8.4
+4.开始安装 mysql8.4
 `yum不一定会安装到自己想要的版本,所以这里选择了 rpm安装 mysql8.4`
 
 `介绍得非常仔细,如果要安装其他版本,自行举一反三`
@@ -220,14 +220,10 @@ CREATE USER  'muyu'@'%'  IDENTIFIED BY  'test351c042ae7_A';
 # 把所有数据库+所有表的权限都给 muyu
 grant all privileges on *.* to 'muyu'@'%' with grant option;
 
-
 flush privileges;
 use mysql;
 select host,user from user;
 远程链接 要注意防火墙
-
-
-
 ````
 
 ## 更改远程连接端口
@@ -238,6 +234,8 @@ port=33445
 
 systemctl restart mysqld
 ````
+## [MySQL慢查询](/service/mysql/mysql-slow)
+## [MySQL服务器配置](/service/mysql/config)
 
 ## mysql监控
 ::: details 查看
@@ -526,14 +524,166 @@ sysbench \
 
 ## sql性能测试
 `环境 redhat9 4核8g 30g_ssd aws云服务器`
+
+### 附带一个php批量插入数据的脚本
+::: details
+````
+CREATE TABLE `orders_202409` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `order_no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `from_id` int NOT NULL DEFAULT '0' COMMENT '卖家id',
+  `amount` float(11,2) NOT NULL,
+  `sale_status` enum('start','trade_ing','trade_cancel','trade_stop','trade_finish') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'start',
+  `delete_at` datetime DEFAULT NULL COMMENT '创建时间',
+  `created_at` datetime NOT NULL COMMENT '创建时间',
+  `notify_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `plat_form_order` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '',
+  `notice_finish` int DEFAULT '0',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `order_no` (`order_no`) USING BTREE,
+  KEY `from_id` (`from_id`) USING BTREE,
+  KEY `created_at` (`created_at`,`sale_status`) USING BTREE,
+  KEY `plat_form_order` (`plat_form_order`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='卖单订单表';
+````
+
+````
+<?php
+
+namespace app\command;
+
+use support\Db;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+
+class TestMysql extends Command
+{
+    protected static $defaultName = 'testMysql';
+    protected static $defaultDescription = 'Mysql analysis';
+
+    protected array $insertData ;
+    /**
+     * @return void
+     */
+    protected function configure()
+    {
+        $this->addArgument('name', InputArgument::OPTIONAL, 'Name description');
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int
+     */
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $name = $input->getArgument('name');
+        $this->insertData=[];
+        $start_time = microtime(true);
+        $startMemory = memory_get_usage();
+        $arr=['orders_202508'];
+//        $arr=['orders_202508','orders_202503','orders_202502','orders_202501','orders_202412','orders_202411','orders_202410','orders_202409'];
+        for ($i = 0; $i < 1; $i++) {
+            var_dump($arr[$i]);
+            $this->test1($arr[$i]);
+        }
+
+
+        debugFn(sprintf("耗时： %f秒<br>", round(microtime(true)-$start_time,3)));
+        debugFn(sprintf("内存使用: %f kb<br>", (memory_get_usage() - $startMemory) / 1024));
+        return self::SUCCESS;
+    }
+
+
+    private function test1($orderTable) {
+        // 总插入次数
+        $totalBatches = 500;
+        $batchesPerInsert = 10000; // 每次插入 1 万条
+        Db::connection('my_test')->beginTransaction();
+        try {
+            for ($batch = 1; $batch <= $totalBatches; $batch++) {
+                $values = [];
+                $currentTime = date('Y-m-d H:i:s'); // 当前时间作为基础
+                for ($i = 0; $i < $batchesPerInsert; $i++) {
+                    $orderNo = date('YmdHis') . substr(microtime(), 2, 6) . sprintf('%03d', rand(0, 999));
+                    $fromId = rand(1, 1000); // 卖家 ID 范围 1-1000
+                    $saleStatus = ['start', 'trade_ing', 'trade_cancel', 'trade_stop', 'trade_finish'][rand(0, 4)];
+                    // 随机生成 created_at 时间（当前时间 ± 30 天）
+                    $createdAt = date('Y-m-d H:i:s', strtotime($currentTime) + rand(-30 * 86400, 30 * 86400));
+                    // 生成 notify_url 和 plat_form_order
+                    $notifyUrl = "https://www.baidu.com/apiv12881shdla/" . bin2hex(random_bytes(4));
+                    $platformOrder = "PT" . bin2hex(random_bytes(8));
+                    $amount=rand(100,100000);
+                    // 构建插入值
+                    $values[] = "(
+                        '$amount',
+                        '$orderNo',
+                        $fromId,
+                        '$saleStatus',
+                        '$createdAt',
+                        NULL,
+                        '$notifyUrl',
+                        '$platformOrder',
+                        0
+                    )";
+                }
+                // 拼接 SQL 语句
+                $sql = "INSERT INTO $orderTable 
+                        (`amount`,`order_no`, `from_id`, `sale_status`, `created_at`, `delete_at`, `notify_url`, `plat_form_order`, `notice_finish`) 
+                        VALUES " . implode(',', $values);
+                $res=Db::connection('my_test')->insert($sql);
+                // 提交事务（每 1 万条提交一次）
+                Db::connection('my_test')->commit();
+
+                echo "已插入第 $batch 批（共 $totalBatches 批），总计 " . ($batch * $batchesPerInsert) . " 条数据\n";
+            }
+        }catch (\Throwable $exception){
+            writeLog('','default',['info'=>$exception->getMessage()]);
+            Db::connection('my_test')->rollback();
+        }
+    }
+}
+
+````
+
+:::
+
 ### union all
 
 ::: details
-`5500万条数据,9表联查,200条查询结果,全走索引,耗时0.078s`
+`60G_SSD 8G内存 4核CPU`
 
-`本来想搞个三亿数据测试一下的,但是磁盘不够了`
+`1亿2千万+`条数据,6表联查,114条查询结果,全走索引,耗时`0.075s`
 
-`如果使用魔改mysql或者oracle数据库,这个结果会更好`
+本来想搞个三亿数据测试一下的,但是磁盘不够了
 
-![union all测试](/document/mysqlTest_unionAll.png)
+如果使用魔改mysql或者oracle数据库,这个结果会更好
+![union all测试](/document/mysqlTest_unionAll0.png)
+<br>
+![union all测试](/document/mysqlTest_unionAll1.png)
+::: 
+
+## 踩坑
+::: details
+### mysql内存占用居高不下1
+系统内存被占用很高,通过top查看是mysql占用了大量内存,通过排查,是超过了 my.cnf设置的 innodb_buffer_pool_size的设置
+,但却一直没有释放,于是检查了mysql链接数并不多且正常,初步推测可能会存在bug.于是查阅资料,果然如我所想
+
+[mysql.bug](https://bugs.mysql.com/bug.php?id=83047)
+
+
+[MySQL内存为什么不断增高，怎么让它释放](https://mp.weixin.qq.com/s/iUvi0xPtKng08fNu_5VWDg) 这篇文章讲解的很详细
+
+该问题早在5.7已经被提出来了,直到目前8.4官方也一直没有解决
+
+<sapn class="marker-evy">如果你的项目不是高频数据操作,没有5000万以上的数据,</sapn>
+<sapn class="marker-evy">仅仅只是外包小项目,完全就可以忽略这个bug</sapn>
+
+**innodb_buffer_pool_size设置的值较大时，InnoDB存储引擎能够缓存更多的数据和索引，
+从而减少磁盘I/O的次数，提高数据库的访问速度和性能。
+相反，如果缓存池设置过小，可能会导致频繁的磁盘I/O操作，影响数据库性能。**
+::: details
+
 :::

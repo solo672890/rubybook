@@ -37,14 +37,19 @@ export const UI_DATA: NavData[] = [
                 link: 'https://lordicon.com/icons/wired/flat?i=25-error-cross'
             },{
                 icon: 'https://icon.wuruihong.com/wrh/logo_bordered.png',
-                title: '图标工厂',
+                title: '图标工厂|启动图',
                 desc: '一键生成所有尺寸的应用图标',
-                link: 'https://lordicon.com/icons/wired/flat?i=25-error-cross'
+                link: 'https://icon.wuruihong.com/'
             },{
                 icon: 'https://icon.kitchen/favicon.ico',
                 title: 'IconKitchen',
                 desc: 'APP图标生成',
-                link: 'https://lordicon.com/icons/wired/flat?i=25-error-cross'
+                link: 'https://icon.kitchen/'
+            },{
+                icon: 'https://app.uiboy.com/logo.svg',
+                title: 'APPLORE',
+                desc: 'APP图标设计参考',
+                link: 'https://app.uiboy.com/'
             },{
                 icon: 'https://vue-color-avatar.vercel.app/assets/logo.f5999a59.svg',
                 title: 'Color Avatar',

@@ -88,6 +88,11 @@ source /root/.bashrc
 yum -y install lrzsz
 ````
 
+### logrotate
+`logrotate 程序是一个日志文件管理工具`
+
+[nginx日志轮转](/service/nginx#日志格式配置-logrotate)
+
 ### top & free -h
 > **top命令会对 Linux 系统中对当前系统资源和进程运行状态的实时监控信息**
 
