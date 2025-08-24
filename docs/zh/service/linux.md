@@ -13,6 +13,18 @@ editLink: true
 介绍的所有和linux系统有关系的软件,均运行在 Red Hat、CentOS7+ 或 Rocky Linux
 :::
 
+## 时间同步
+````
+# 1. 设置时区
+sudo timedatectl set-timezone Asia/Shanghai
+# 2. 启用 NTP 同步
+sudo timedatectl set-ntp true
+# 3. 验证
+timedatectl status
+# 4. 查看还有哪些时区可以选择
+timedatectl list-timezones
+````
+
 ## 常用命令
 
 ### 系统查看

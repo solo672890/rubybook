@@ -234,8 +234,8 @@ port=33445
 
 systemctl restart mysqld
 ````
-## [MySQL慢查询](/service/mysql/mysql-slow)
-## [MySQL服务器配置](/service/mysql/config)
+## 👉[MySQL慢查询](/service/mysql/mysql-slow)
+## 👉[MySQL服务器配置](/service/mysql/config)
 
 ## mysql监控
 ::: details 查看
@@ -247,6 +247,25 @@ show variables like '%max_connection%';
 ````
 show global status like 'Threads_connected';
 ````
+
+### 查看占用的总内存
+````
+SELECT * FROM sys.memory_global_total;
+````
+
+### 查看具体占用的内存
+````
+SELECT 
+    SUBSTRING_INDEX(event_name, '/', 2) AS memory_layer,
+    ROUND(SUM(CURRENT_NUMBER_OF_BYTES_USED) / 1048576, 2) AS bytes_used_mb
+FROM 
+    performance_schema.memory_summary_global_by_event_name
+GROUP BY 
+    memory_layer
+ORDER BY 
+    bytes_used_mb DESC;
+````
+
 ### 连接健康查看
 ````
 # 如果大于0.8 表示压力有点大了,应该要触发警告
@@ -666,24 +685,9 @@ class TestMysql extends Command
 ::: 
 
 ## 踩坑
-::: details
-### mysql内存占用居高不下1
-系统内存被占用很高,通过top查看是mysql占用了大量内存,通过排查,是超过了 my.cnf设置的 innodb_buffer_pool_size的设置
-,但却一直没有释放,于是检查了mysql链接数并不多且正常,初步推测可能会存在bug.于是查阅资料,果然如我所想
 
-[mysql.bug](https://bugs.mysql.com/bug.php?id=83047)
+### [mysql内存占用居高不下且不释放](/service/mysql/bug1)
 
 
-[MySQL内存为什么不断增高，怎么让它释放](https://mp.weixin.qq.com/s/iUvi0xPtKng08fNu_5VWDg) 这篇文章讲解的很详细
 
-该问题早在5.7已经被提出来了,直到目前8.4官方也一直没有解决
 
-<sapn class="marker-evy">如果你的项目不是高频数据操作,没有5000万以上的数据,</sapn>
-<sapn class="marker-evy">仅仅只是外包小项目,完全就可以忽略这个bug</sapn>
-
-**innodb_buffer_pool_size设置的值较大时，InnoDB存储引擎能够缓存更多的数据和索引，
-从而减少磁盘I/O的次数，提高数据库的访问速度和性能。
-相反，如果缓存池设置过小，可能会导致频繁的磁盘I/O操作，影响数据库性能。**
-::: details
-
-:::

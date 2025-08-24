@@ -119,6 +119,11 @@ sudo logrotate  /etc/logrotate.d/mysql-slow
 */20 * * * * root /usr/sbin/logrotate /etc/logrotate.d/mysql-slow
 ````
 
-📌 注意事项
 
-如果删除了 mysql-slow.log或者轮转后的文件,那么必须手动 `mysqladmin -uroot -ptest351c042ae7_A flush-logs` 通知mysql
+::: warning 📌注意事项
+如果删除了 mysql-slow.log或者轮转后的文件,那么必须手动
+
+`mysqladmin -uroot -ptest351c042ae7_A flush-logs` 
+
+通知mysql
+:::
