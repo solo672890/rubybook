@@ -157,7 +157,8 @@ Swap:          4.0G          0B      4.0G
 > `available` 是系统评估的可用内存，比 free 更准确
 
 :::
-
+### ls -la --block-size=M
+把文件大小(bytes)转成M
 
 ### nohup
 

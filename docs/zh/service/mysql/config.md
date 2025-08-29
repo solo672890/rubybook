@@ -34,7 +34,7 @@ sudo touch /var/log/mysql/mysql-slow.log && chmod 640 /var/log/mysql/mysql-slow.
 # =========================
 # InnoDB 核心配置（内存优化）
 # =========================
-innodb_buffer_pool_size = 6G                 # 8GB内存分配6G给InnoDB缓存
+innodb_buffer_pool_size = 4.5G                 # 8GB内存分配4.5G给InnoDB缓存
 innodb_buffer_pool_instances = 4             # 缓冲池实例数 = CPU核数
 innodb_log_file_size = 1G                    # 增大日志文件减少检查点频率
 innodb_log_files_in_group = 2                # 日志文件数
@@ -59,8 +59,7 @@ max_heap_table_size = 128M                   # 用户会话临时表大小
 skip-name-resolve                            # 禁止DNS解析，提升连接速度
 wait_timeout = 300                           # 空闲连接超时时间（秒）
 interactive_timeout = 300                    # 交互式连接超时时间
-max_allowed_packet=1G
-bulk_insert_buffer_size=100M
+
 # =========================
 # 查询与事务配置
 # =========================
@@ -81,7 +80,7 @@ enforce_gtid_consistency = ON              # 强制GTID一致性
 # 磁盘与文件系统优化
 # =========================
 default_tmp_storage_engine = MEMORY        # 临时表使用内存引擎
-innodb_max_dirty_pages_pct = 75            # 脏页比例（75%平衡刷新频率）
+innodb_max_dirty_pages_pct = 50            # 脏页比例（50%平衡刷新频率）
 innodb_max_dirty_pages_pct_lwm = 10        # 脏页低水位线
 innodb_purge_threads = 4                   # 清理线程数（CPU核数）
 innodb_change_buffer_max_size = 25         # 修改缓冲区大小（SSD可调低）
@@ -92,7 +91,7 @@ innodb_doublewrite = ON                    # 双写缓冲（保护数据）
 # 安全与监控
 # =========================
 log_output=FILE
-slow_query_log = OFF                           # 慢查询日志
+slow_query_log = ON                           # 慢查询日志
 slow_query_log_file = /var/log/mysql/mysql-slow.log
 long_query_time = 0.5                         # 超过0.5秒记录慢查询
 log_queries_not_using_indexes = ON            # 记录未使用索引的查询
@@ -106,11 +105,13 @@ log_slow_slave_statements = ON                # 记录锁等待时间超过阈�
 ## 配置解释
 
 ### innodb_buffer_pool_size 
+[MySQL innodb_buffer_pool_size内存调优](https://cloud.tencent.com/developer/article/2537460)
 
 >用于缓存数据和索引的内存大小,减少磁盘 I/O，提升查询速度.
->如果服务器只做数据库服务,可以设置到内存的75%,否则设置50%即可,过大的buffer pool可能导致系统崩溃
+>如果服务器只做数据库服务,最多设置到内存的60%,否则设置30%即可,
+> 过大的buffer pool可能导致系统崩溃,内存占用也会超出预期
 >该参数不要乱设置,如果mysql和其他服务同处于一台linux上,则不要设置过大,因为我已经崩溃过.
->
+>本人多次测试,8G内存,最多只能将它设置为5G,多了要超出内存
 >InnoDB 不是每次读写都直接操作磁盘，而是通过这个内存缓冲池来缓存：
 >1. 数据页（Data Pages）：表中的行数据。
 >1. 索引页（Index Pages）：B+树索引结构。
@@ -137,11 +138,11 @@ log_slow_slave_statements = ON                # 记录锁等待时间超过阈�
 >
 >**✅推荐配置原则**
 >
->| Buffer Pool 总大小 |    user_id    |
-> |:---------------:|:-------------:|
->|    1GB ~ 4GB    |       4       |
->|    4GB ~ 8GB    |       8       | 
->|       >8G       | 8~16(一般不超过16) | 
+>| 数据库规模 | 推荐比例 |  计算示例   |
+> |:-----:|:----:|:-------:|
+>| 8GB内存 | <60% | < 4.5GB |
+>| 16GB  | 60%  |  10GB   |
+>| >32GB | 70%  |  >22GB  | 
 
 ### innodb_log_file_size 
 > ````
@@ -216,7 +217,7 @@ MySQL8.0.30之前，InnoDB 的重做日志大小由 `innodb_log_file_size` 和 `
 
 >**动态查看和修改**
 >````
->SHOW VARIABLES LIKE 'innodb_redo_log_capacity';
+>SELECT @@innodb_buffer_pool_size AS bytes,ROUND(@@innodb_buffer_pool_size / (1024 * 1024 * 1024), 2) AS GB;
 >
 ># 注意：动态修改时，MySQL 会自动进行日志归档和重新分配，过程是 在线、非阻塞 的，但建议在低峰期操作
 >SET GLOBAL innodb_redo_log_capacity = 2147483648; -- 2G
@@ -245,9 +246,14 @@ MySQL8.0.30之前，InnoDB 的重做日志大小由 `innodb_log_file_size` 和 `
 >| 参数值  |     行为      |  安全   |     性能      |   场景   |
 > |:---------------:|-----------|:-----:|:-----------:|:------:|
 >| 1   | 每次提交都刷盘  | ✅ 最高  |❌ 最低| 金额类操作  |
->| 2  | 写入 OS 缓存，每秒刷盘 | ⚠️ 中等 |✅ 较高| 项目日志类  |
->| 0   |   每秒刷盘一次   | ❌ 最低  |✅ 最高| 我是没想出来 |
+>| 2  | 写入 OS 缓存，每秒刷盘 | ⚠️ 中等 |✅ 较高| 操作类志类  |
+>| 0   |   每秒刷盘一次   | ❌ 最低  |✅ 最高| 操作类志类 |
 >
+> sync_binlog=1 + innodb_flush_log_at_trx_commit=1  最高安全性,牺牲性能
+> 
+> 
+> sync_binlog=1000 + innodb_flush_log_at_trx_commit=2  高性能,适合用户操作类记录不敏感数据
+> 
 > **代码中未开启事务,也会触发吗❓**
 > 
 > 是的，即使你没有显式开启事务（即没有写 BEGIN 或 START TRANSACTION），

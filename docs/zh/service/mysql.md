@@ -236,6 +236,7 @@ systemctl restart mysqld
 ````
 ## 👉[MySQL慢查询](/service/mysql/mysql-slow)
 ## 👉[MySQL服务器配置](/service/mysql/config)
+## 👉[备份与恢复](/service/mysql/backup)
 
 ## mysql监控
 ::: details 查看
@@ -264,6 +265,19 @@ GROUP BY
     memory_layer
 ORDER BY 
     bytes_used_mb DESC;
+````
+
+### 查看某库占地面积
+````
+SELECT 
+    table_schema AS 'xxxxx',
+    ROUND(SUM(data_length + index_length) / 1024 / 1024, 2) AS '大小(MB)'
+FROM 
+    information_schema.tables 
+WHERE 
+    table_schema = 'xxxxx'  
+GROUP BY 
+    table_schema;
 ````
 
 ### 连接健康查看
@@ -603,27 +617,27 @@ class TestMysql extends Command
         $start_time = microtime(true);
         $startMemory = memory_get_usage();
         $arr=['orders_202508'];
+//        $res=Db::connection('my_test')->select("select delete_at,id from orders_202503 where delete_at='2025-08-21 03:30:45'");
+//        var_dump($res);
 //        $arr=['orders_202508','orders_202503','orders_202502','orders_202501','orders_202412','orders_202411','orders_202410','orders_202409'];
         for ($i = 0; $i < 1; $i++) {
-            var_dump($arr[$i]);
+
             $this->test1($arr[$i]);
         }
-
-
         debugFn(sprintf("耗时： %f秒<br>", round(microtime(true)-$start_time,3)));
         debugFn(sprintf("内存使用: %f kb<br>", (memory_get_usage() - $startMemory) / 1024));
         return self::SUCCESS;
     }
 
-
     private function test1($orderTable) {
         // 总插入次数
-        $totalBatches = 500;
-        $batchesPerInsert = 10000; // 每次插入 1 万条
-        Db::connection('my_test')->beginTransaction();
+        $totalBatches = 1;
+        $batchesPerInsert = 1; // 每次插入 1 万条
+
         try {
             for ($batch = 1; $batch <= $totalBatches; $batch++) {
                 $values = [];
+//                Db::connection('my_test')->beginTransaction();
                 $currentTime = date('Y-m-d H:i:s'); // 当前时间作为基础
                 for ($i = 0; $i < $batchesPerInsert; $i++) {
                     $orderNo = date('YmdHis') . substr(microtime(), 2, 6) . sprintf('%03d', rand(0, 999));
@@ -649,22 +663,24 @@ class TestMysql extends Command
                     )";
                 }
                 // 拼接 SQL 语句
-                $sql = "INSERT INTO $orderTable 
+                $sql = "INSERT delayed INTO $orderTable 
                         (`amount`,`order_no`, `from_id`, `sale_status`, `created_at`, `delete_at`, `notify_url`, `plat_form_order`, `notice_finish`) 
                         VALUES " . implode(',', $values);
-                $res=Db::connection('my_test')->insert($sql);
+                unset($values);
+                $start_time = microtime(true);
+                Db::connection('my_test')->beginTransaction();
+                Db::connection('my_test')->insert($sql);
+                debugFn(sprintf("sql耗时： %f秒<br>", round(microtime(true)-$start_time,3)));
                 // 提交事务（每 1 万条提交一次）
                 Db::connection('my_test')->commit();
-
                 echo "已插入第 $batch 批（共 $totalBatches 批），总计 " . ($batch * $batchesPerInsert) . " 条数据\n";
             }
         }catch (\Throwable $exception){
             writeLog('','default',['info'=>$exception->getMessage()]);
-            Db::connection('my_test')->rollback();
+//            Db::connection('my_test')->rollback();
         }
     }
 }
-
 ````
 
 :::
@@ -687,6 +703,7 @@ class TestMysql extends Command
 ## 踩坑
 
 ### [mysql内存占用居高不下且不释放](/service/mysql/bug1)
+### [innodb索引损坏,修复表](/service/mysql/innodb_damage)
 
 
 
