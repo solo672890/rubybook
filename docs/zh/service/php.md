@@ -62,5 +62,6 @@ mkdir -p /usr/local/etc/php &&  cp server_install/php-cli/php.ini /usr/local/etc
 php -c /path/to/your/php.ini start.php start
 
 ````
+:::
 
 

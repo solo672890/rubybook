@@ -33,6 +33,8 @@ const DATA=[
 </script>
 
 <MNavLinks v-for="{title, items} in DATA" :title="title" :items="items"/>
+
+## 👉[当执行一条insert|update mysql会做哪些事情](/service/mysql/will_do)
 <br>
 
 ## 安装
@@ -558,6 +560,8 @@ sysbench \
 ## sql性能测试
 `环境 redhat9 4核8g 30g_ssd aws云服务器`
 
+### 👉[explain](/service/mysql/explain)
+
 ### 附带一个php批量插入数据的脚本
 ::: details
 ````
@@ -582,20 +586,16 @@ CREATE TABLE `orders_202409` (
 
 ````
 <?php
-
 namespace app\command;
-
 use support\Db;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-
 class TestMysql extends Command
 {
     protected static $defaultName = 'testMysql';
     protected static $defaultDescription = 'Mysql analysis';
-
     protected array $insertData ;
     /**
      * @return void
@@ -604,7 +604,6 @@ class TestMysql extends Command
     {
         $this->addArgument('name', InputArgument::OPTIONAL, 'Name description');
     }
-
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
@@ -617,27 +616,23 @@ class TestMysql extends Command
         $start_time = microtime(true);
         $startMemory = memory_get_usage();
         $arr=['orders_202508'];
-//        $res=Db::connection('my_test')->select("select delete_at,id from orders_202503 where delete_at='2025-08-21 03:30:45'");
-//        var_dump($res);
-//        $arr=['orders_202508','orders_202503','orders_202502','orders_202501','orders_202412','orders_202411','orders_202410','orders_202409'];
         for ($i = 0; $i < 1; $i++) {
 
             $this->test1($arr[$i]);
         }
-        debugFn(sprintf("耗时： %f秒<br>", round(microtime(true)-$start_time,3)));
-        debugFn(sprintf("内存使用: %f kb<br>", (memory_get_usage() - $startMemory) / 1024));
+        $this->debugFn(sprintf("耗时： %f秒<br>", round(microtime(true)-$start_time,3)));
+        $this->debugFn(sprintf("内存使用: %f kb<br>", (memory_get_usage() - $startMemory) / 1024));
         return self::SUCCESS;
     }
+
 
     private function test1($orderTable) {
         // 总插入次数
         $totalBatches = 1;
         $batchesPerInsert = 1; // 每次插入 1 万条
-
         try {
             for ($batch = 1; $batch <= $totalBatches; $batch++) {
                 $values = [];
-//                Db::connection('my_test')->beginTransaction();
                 $currentTime = date('Y-m-d H:i:s'); // 当前时间作为基础
                 for ($i = 0; $i < $batchesPerInsert; $i++) {
                     $orderNo = date('YmdHis') . substr(microtime(), 2, 6) . sprintf('%03d', rand(0, 999));
@@ -667,44 +662,39 @@ class TestMysql extends Command
                         (`amount`,`order_no`, `from_id`, `sale_status`, `created_at`, `delete_at`, `notify_url`, `plat_form_order`, `notice_finish`) 
                         VALUES " . implode(',', $values);
                 unset($values);
-                $start_time = microtime(true);
                 Db::connection('my_test')->beginTransaction();
                 Db::connection('my_test')->insert($sql);
-                debugFn(sprintf("sql耗时： %f秒<br>", round(microtime(true)-$start_time,3)));
-                // 提交事务（每 1 万条提交一次）
                 Db::connection('my_test')->commit();
                 echo "已插入第 $batch 批（共 $totalBatches 批），总计 " . ($batch * $batchesPerInsert) . " 条数据\n";
             }
         }catch (\Throwable $exception){
             writeLog('','default',['info'=>$exception->getMessage()]);
-//            Db::connection('my_test')->rollback();
         }
+    }
+    private function debugFn(string $msg = 'demo') :bool {
+        if(is_string($msg)){
+            echo sprintf("\033[1;36m%s\033[0m", $msg);
+            echo "\n----------------------------------------------------\n";
+        }else{
+            var_dump($msg);
+        }
+        return true;
     }
 }
 ````
 
 :::
 
-### union all
+### 👉[union all](/service/mysql/unionAll)
 
-::: details
-`60G_SSD 8G内存 4核CPU`
 
-`1亿2千万+`条数据,6表联查,114条查询结果,全走索引,耗时`0.075s`
 
-本来想搞个三亿数据测试一下的,但是磁盘不够了
-
-如果使用魔改mysql或者oracle数据库,这个结果会更好
-![union all测试](/document/mysqlTest_unionAll0.png)
-<br>
-![union all测试](/document/mysqlTest_unionAll1.png)
-::: 
-
-## 踩坑
+## 记录
 
 ### [mysql内存占用居高不下且不释放](/service/mysql/bug1)
 ### [innodb索引损坏,修复表](/service/mysql/innodb_damage)
-
+### [记一次 order by 优化](/service/mysql/orderByOptimize)
+### [C2C交易订单表按月分表后如何查询](/service/mysql/ftable_query)
 
 
 

@@ -30,7 +30,7 @@ sudo touch /var/log/mysql/mysql-slow.log && chmod 640 /var/log/mysql/mysql-slow.
 ````
 ````shell
 [mysqld]
-
+optimizer_switch='batched_key_access=on,mrr=on,mrr_cost_based=on'  #增加查询性能,4G以下小内存不要开启了
 # =========================
 # InnoDB 核心配置（内存优化）
 # =========================
@@ -58,7 +58,7 @@ tmp_table_size = 128M                        # 内存临时表大小
 max_heap_table_size = 128M                   # 用户会话临时表大小
 skip-name-resolve                            # 禁止DNS解析，提升连接速度
 wait_timeout = 300                           # 空闲连接超时时间（秒）
-interactive_timeout = 300                    # 交互式连接超时时间
+interactive_timeout = 28800                    # 交互式连接超时时间
 
 # =========================
 # 查询与事务配置
@@ -249,10 +249,10 @@ MySQL8.0.30之前，InnoDB 的重做日志大小由 `innodb_log_file_size` 和 `
 >| 2  | 写入 OS 缓存，每秒刷盘 | ⚠️ 中等 |✅ 较高| 操作类志类  |
 >| 0   |   每秒刷盘一次   | ❌ 最低  |✅ 最高| 操作类志类 |
 >
-> sync_binlog=1 + innodb_flush_log_at_trx_commit=1  最高安全性,牺牲性能
+> sync_binlog=1 and innodb_flush_log_at_trx_commit=1  最高安全性,牺牲性能
 > 
 > 
-> sync_binlog=1000 + innodb_flush_log_at_trx_commit=2  高性能,适合用户操作类记录不敏感数据
+> sync_binlog=1000 and innodb_flush_log_at_trx_commit=2  高性能,适合用户操作类记录不敏感数据
 > 
 > **代码中未开启事务,也会触发吗❓**
 > 
@@ -403,8 +403,10 @@ MySQL8.0.30之前，InnoDB 的重做日志大小由 `innodb_log_file_size` 和 `
 > * `内存开销`,哈希表占用额外内存,约为缓冲池的 5-10%,在 8GB 内存服务器上约 400-800MB
 > * `维护开销`,数据变更时需同步更新哈希索引,高频写入场景可能影响性能
 
->**✅总结**
+> **✅总结**
 > * `生产环境开启`,利大于弊
 > * `超高并发写入`,关闭
 > * `读写分离`,读库开,写库关
 > * `非读写分离`,开启它,利大于弊
+
+

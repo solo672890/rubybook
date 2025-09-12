@@ -242,6 +242,8 @@ mydumper --version
  |     --verbose		      | 设置日志详细程度,1:error,2:warning,✅3:info(推荐),4:debug,5:trace                    | --verbose=3                     |
  | --long-query-guard		 | 长查询保护,有查询已运行超过 30 秒，mydumper 的行为取决于 --kill-long-queries                   | --long-query-guard=60           |
  | --kill-long-queries		 | 备份开始前，扫描所有正在运行的查询,如果有查询 > 30 秒，mydumper 会执行 KILL QUERY \<id\> 将其终止,然后继续备份 | --kill-long-queries             |
+ | --trx-consistency-only		 | 通过事务一致性确保备份数据的一致性，而无需对表加锁。此方法仅适用于 InnoDB 存储引擎 | --trx-consistency-only             |
+
 
 
 
@@ -255,6 +257,8 @@ time mydumper \
   --database=my_test \
   --outputdir=/backup/orders_full_$(date +%Y%m%d) \
   --compress \
+  --verbose=3 \
+  --trx-consistency-only \
   --threads=4 \
   --rows=100000 \
 ````
@@ -273,6 +277,7 @@ time  mydumper \
   --rows=500000 \
   --chunk-filesize=512 \
   --statement-size=1000000 \
+  --trx-consistency-only \
   --long-query-guard=600 \
   --kill-long-queries \
   --verbose=3 \
@@ -285,15 +290,13 @@ time  mydumper \
 ### 导出|备份特定表
 ````bash
 # 导出单个表
-time mydumper \
-  --host=localhost \
-  --user=root \
-  --password=your_password \
-  --database=orders_db \
-  --tables-list="orders_202508,orders_202507" \
-  --outputdir=/backup/specific_tables \
-  --compress \
-  --threads=4
+time mydumper --host=localhost --user=root --password=test351c042ae7_A \
+--database=my_test \
+--tables-list="my_test.orders_202504,my_test.orders_202505" \
+--outputdir=/backup/orders_full_$(date +%Y%m%d) \
+--trx-consistency-only \
+--verbose=3 \
+--compress --threads=4
 ````
 
 ### 只备份表结构（无数据）
@@ -304,7 +307,9 @@ time mydumper \
   --password=your_password \
   --database=orders_db \
   --no-data \
+  --verbose=3 \
   --outputdir=/backup/schema_only \
+  --trx-consistency-only \
   --threads=2
 ````
 ### 只备份数据（无表结构）
@@ -316,7 +321,9 @@ time mydumper \
   --database=orders_db \
   --no-schemas \
   --outputdir=/backup/data_only \
+  --trx-consistency-only \
   --compress \
+  --verbose=3 \
   --threads=4
 ````
 
@@ -344,7 +351,9 @@ time mydumper \
   --database=$DATABASE \
   --outputdir=$BACKUP_DIR \
   --compress \
+  --trx-consistency-only \
   --threads=6 \
+  --verbose=3 \
   --rows=100000 \
   --long-query-guard=60 \
   --kill-long-queries \
@@ -388,7 +397,7 @@ fi
 |          --logfile		           | 日志记录文件                                                 | --logfile=/var/log/mydumper/orders_db_$(date +%Y%m%d).log | 
 |         --drop-table		         | 对每个表执行 DROP TABLE IF EXISTS       | --drop-table           | 
 
-### 恢复数据库
+### 恢复数据库(覆盖)
 ````
 
 time myloader \
@@ -396,24 +405,25 @@ time myloader \
   --user=root \
   --password=test351c042ae7_A  \
   --database=my_test \
-  --directory=/backup/orders_full_20250829 \
+  --directory=/backup/orders_full_20250904 \
   --queries-per-transaction=1000 \
   --verbose=3 \
   --threads=4 \
   --drop-table
 ````
-### 恢复特定表
-````
+### 恢复特定表(覆盖)
+```` bash
 time myloader \
   --host=localhost \
   --user=root \
-  --password=your_password \
-  --database=orders_db \
-  --directory=orders_full_20250828 \
+  --password=test351c042ae7_A  \
+  --database=my_test \
+  --tables-list="my_test.orders_202507" \
+  --directory=/backup/orders_full_20250904 \
   --queries-per-transaction=1000 \
+  --verbose=3 \
   --threads=4 \
-  --tables-list="orders_202508,orders_202507" \
-  --drop-table
+  --drop-table  
 ````
 :::
 
@@ -436,7 +446,7 @@ real	3m40.857s
 user	3m1.641s
 sys	    0m21.429s
 
-
+ 
 耗时 3m40.857s
 ````
 ### 记一次大表恢复导入耗时 
