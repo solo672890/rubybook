@@ -4,6 +4,7 @@ export const zhSidebar: DefaultTheme.Sidebar = {
     "/service/": { base: "/service/", items: sidebarService() },
     "/web/": { base: "/web/", items: webNavigation() },
     "/navigation/": { base: "/navigation/", items: sidebarNavigation() },
+    "/git/": { base: "/git/", items: gitNavigation() },
 }
 
 
@@ -76,6 +77,22 @@ function webNavigation(): DefaultTheme.SidebarItem[] {
             collapsed: false,
             items: [
                 { text: "node", link: "node" },
+
+            ],
+        },
+
+
+    ];
+}
+function gitNavigation(): DefaultTheme.SidebarItem[] {
+    return [
+        {
+            text: "",
+            collapsed: false,
+            items: [
+                { text: "新手教程", link: "tutorial" },
+                { text: "更换远程库", link: "changeRemote" },
+                { text: "多人协作", link: "collaboration" },
 
             ],
         },

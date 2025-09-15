@@ -9,6 +9,7 @@ const zhNav: DefaultTheme.NavItem[] = [
             {text: "理论", link: "/theory/whatsRubyBook", activeMatch: "/theory/",},
             {text: "服务端", link: "/service/linux", activeMatch: "/service/",},
             {text: "web端", link: "/web/node", activeMatch: "/web/",},
+            {text: "git", link: "/git/tutorial", activeMatch: "/git/"},
 
         ],
     }],

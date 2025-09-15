@@ -12,6 +12,7 @@ comment: true
 
 ::: tip 简述
 《[RubyBook](/index)》 是一部<<中小型IT项目指南>> ,旨在帮助大家快速了解中小型IT项目的架构,知识等.
+它不适合刚入行的新手.
 :::
 
 <p align="center">
