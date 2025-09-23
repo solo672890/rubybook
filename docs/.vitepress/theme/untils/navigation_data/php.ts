@@ -34,6 +34,16 @@ export const PHP_DATA: NavData[] = [
                 desc: '简单可扩展的爬虫框架',
                 link: 'https://github.com/kiddyuchina/Beanbun?tab=readme-ov-file'
             },
+            {
+                icon: '/icons/Github-Logo.png',
+                title: 'ip2region',
+                badge: {
+                    text: '高赞',
+                    type: 'danger',
+                },
+                desc: 'php的ip查询库',
+                link: 'https://github.com/zoujingli/ip2region?tab=readme-ov-file'
+            },
 
         ]
     },

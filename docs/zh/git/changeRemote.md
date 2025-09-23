@@ -95,7 +95,9 @@ git config --global credential.helper manager-core
 
 * Linux：
 ````
-git config --global credential.helper cache
+2选1
+git config --global credential.helper cache  #缓存在内存一段时间,默认15分钟
+git config --global credential.helper store  #永久缓存在硬盘
 ````
 
 ### ✅ 解决方案三：改用 SSH（一劳永逸，推荐开发者使用）

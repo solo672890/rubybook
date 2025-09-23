@@ -64,4 +64,8 @@ php -c /path/to/your/php.ini start.php start
 ````
 :::
 
+<br>
+<br>
+
+[君欲善其事,必先利其器-php](/service/php/toolsFirst-php)
 

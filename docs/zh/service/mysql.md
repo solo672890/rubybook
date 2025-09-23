@@ -34,7 +34,7 @@ const DATA=[
 
 <MNavLinks v-for="{title, items} in DATA" :title="title" :items="items"/>
 
-## 👉[当执行一条insert|update mysql会做哪些事情](/service/mysql/will_do)
+
 <br>
 
 ## 安装
@@ -695,6 +695,5 @@ class TestMysql extends Command
 ### [innodb索引损坏,修复表](/service/mysql/innodb_damage)
 ### [记一次 order by 优化](/service/mysql/orderByOptimize)
 ### [C2C交易订单表按月分表后如何查询](/service/mysql/ftable_query)
-
-
+### 👉[mysql的三种log](/service/mysql/will_do)
 
