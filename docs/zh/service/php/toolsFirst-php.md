@@ -11,7 +11,10 @@ comment: false
 > 先选择一门框架,我选择了 `webman` 框架,任何框架,拿到手后,要先做一个基础的封装.
 > 
 >  [完整版地址](https://github.com/solo672890/webman_api_basic)
-
+## 启动命令
+```
+sudo -u www php start.php start
+```
 
 ## 1. 准备一个刚下载好的纯净版 webman
 基本库安装: env
@@ -39,18 +42,12 @@ comment: false
 
 [新增monolog类](https://github.com/solo672890/webman_api_basic/commit/31b2fa3cd01d5d54b9fa441f18ba418ef28d1ded#diff-105c5234a5091088027caf413691f2a57db1e35f7bea1220503550d103d1f5d1)
 
-[新增writeLog函数](https://github.com/solo672890/webman_api_basic/commit/3d77e6f723e6b157d1cc1e11d0f96f1a089999b1)
-
 > webman本身自带日志没有切割功能,我已经定制了,实现按小时分割
 > 需要自行配置 config/log.php
-::: details 调用方法
-```` bash
-writeLog('program error','other',['msg'=>'错误记录'],Logger::WARNING,$e);
-````
-:::
+
 
 ## 4. 自定义日志写入类
-[新增writeLog函数](https://github.com/solo672890/webman_api_basic/commit/3d77e6f723e6b157d1cc1e11d0f96f1a089999b1)
+[新增buildLog类](https://github.com/solo672890/webman_api_basic/commit/a2d140006be2f736a7b354919d8244cf1f646f4f)
 > 框架自带log类写入的方式太简单了,自定义记录的内容会更加详细,并且特殊的channel无需在log.php配置文件中定义.
 ```` [php]
 //调用方法
@@ -183,3 +180,203 @@ class AuthMiddleware implements MiddlewareInterface {
 $token = JwtToken::generateToken(['id'  => $res->id]);
 ````
 
+## 11. limiterMiddleware 限流方案
+`composer require webman/rate-limiter`
+> 不适用于ddos防范,ddos防范建议在nginx中配置 [nginx限流](/service/nginx#限流配置-防ddos)
+> 
+> 虽然可以在中间件中使用限流,但请注意使用场景
+> 
+> 建议使用ip+userid 在中间件来进行配合限流
+> 
+
+[官方手册](https://www.workerman.net/doc/webman/components/rate-limiter.html)
+
+[代码变动](https://github.com/solo672890/webman_api_basic/commit/e173f4212d73b10437169990e8aef3bc04521e60)
+::: details 修改源代码
+
+````
+/vendor/webman/rate-limiter
+public static function check(string $key, int $limit, int $ttl, callable $callback=null,): bool|Exception {
+    $key = static::$prefix . '-' . $key;
+    if (static::$driver->increase($key, $ttl) > $limit) {
+        $callback && $callback();
+        throw new RateLimitException('Too many requests.');
+    }
+    return true;
+}
+
+
+//配置redis连接
+````
+:::
+
+::: details 调用方法
+``````
+//调用方法1
+Limiter::check($request->post('mobile'), 1, 5 * 60, function () {
+    throw new SmsException('五分钟内有效,请勿一直发送');
+});
+
+//中间件中使用
+class LimiterMiddleware implements MiddlewareInterface {
+    public function process(Request $request, callable $handler): Response {
+        $request->userId=6;//模拟登录用户访问
+
+        if($request->userId){
+            $this->limiterExceptionHandler($request->userId, $request->header('user-agent',''));
+            return $handler($request);
+        }
+        if( $request->sessionId()){
+            $this->limiterExceptionHandler($request->sessionId(), $request->header('user-agent',''));
+            return $handler($request);
+        }
+        //开放性产品并非特别适用这个方法,比如抖音快手,在公共场合(火车站)使用公共wifi
+        // 但是,游客,手动关闭cookie,请求头又一致的情况不多见,应该由专门的模块对该类型进行日志分析,必要时根据情况,强制登录或是ip封印或是人机校验
+
+        //如果是大产品,比如抖音,应该将用户访问的服务器和游客访问的服务器分开,避免游客(可能是破坏分子)的行为影响到正常用户,
+        //如果游客行为疑问很多,此时不能ip封印,容易误杀,建议强制登录或是人机校验,然后对此ip上的用户和游客增加风险标签
+        //再给一种比较柔和的方案,对称加密参数,参数里包含用户指纹.根据指纹的情况决定是否 封禁该设备
+
+        //如果是非开放产品,比如核心功能是交易之类,但产品需求也要保持游客访问,则这个方法就非常适用.
+
+        //总结,对这类匿名游客的方法:   1.增加风险评估系统(根据限流日志评估) 2.根据风险等级决定是否 封禁IP,强制登录,人机校验,封禁设备
+        $header=$request->header('user-agent', '');
+        $customID=$header.$request->getRealIp().$request->header('"content-length','');
+        $this->limiterExceptionHandler(md5($customID), $header);
+
+        return $handler($request);
+    }
+
+
+    protected function limiterExceptionHandler(string $key,string $header) {
+        Limiter::check($key, 7,3, function ()use($header) {
+            BuildLog::channel('limiterException')->warning($header);
+            throw new LimiterException('请求频繁');
+        });
+    }
+}
+``````
+:::
+
+## 12. sql 监听
+[代码变动](https://github.com/solo672890/webman_api_basic/commit/d38fe152861aa520cf09211f96bc1e3756f37ca9)
+
+> 项目开发,维护,调试时期,查看执行的sql是必不可少的
+> 
+> 这里的orm模式我选择了thinkorm,主要是要契合管理后台,保持一致
+> 
+
+::: details show  code for you
+```` [php]
+//一定要先注册到 app/bootstrap.php,否则不生效
+//return [  //参考
+//    support\bootstrap\Session::class,
+//    \Webman\ThinkOrm\ThinkOrm::class,
+//    \support\ListenSql::class,
+//];
+ 
+
+class ListenSql implements Bootstrap {
+
+public static function start($worker)
+{
+    $config = config('think-orm.connections.mysql');
+
+    if (!$config['trigger_sql']) {
+        return;
+    }
+    // 进行监听处理
+    Db::listen(function($sql, $runtime) use ($config) {
+        if ($sql === 'select 1') {
+            // 心跳
+            return;
+        }
+        $log = $sql." [{$runtime}s]";
+        // 打印到控制台
+        echo "[".date("Y-m-d H:i:s")."]"."\033[32m".$log."\033[0m".PHP_EOL;
+
+    });
+}
+
+
+//如果是larval orm
+public static function ifLarval($worker){
+    $config = config('laravelorm-log.app');
+    if (!$config['trigger_sql']) {
+        return;
+    }
+    // 进行监听处理
+    Db::listen(function($query) use ($config) {
+        $sql = $query->sql;
+        $time = $query->time;
+        if ($sql === 'select 1') {
+            // 心跳
+            return;
+        }
+        $bindings = [];
+        if ($query->bindings) {
+            foreach ($query->bindings as $v) {
+                if (is_numeric($v)) {
+                    $bindings[] = $v;
+                } else {
+                    $bindings[] = '"' . strval($v) . '"';
+                }
+            }
+        }
+        $sql = self::replacePlaceholders($sql, $bindings);
+        $log = $sql." [{$time}ms]";
+        // 打印到控制台
+        if ($config['console']) {
+            echo "[".date("Y-m-d H:i:s")."]"."\033[32m".$log."\033[0m".PHP_EOL;
+        }
+    });
+}
+/**
+ * 字符串处理
+ * @param $sql
+ * @param $params
+ * @return mixed|string
+ */
+public static function replacePlaceholders($sql, $params) {
+    if (empty($params)) {
+        return $sql;
+    }
+    $parts = explode('?', $sql);
+    $result = $parts[0];
+    $paramCount = count($params);
+    for ($i = 0; $i < $paramCount && $i < count($parts) - 1; $i++) {
+        $value = $params[$i];
+        $result .= $value . $parts[$i + 1];
+    }
+    if (count($parts) - 1 > $paramCount) {
+        $result .= implode('?', array_slice($parts, $paramCount + 1));
+    }
+    return $result;
+}
+````
+:::
+
+
+## 13. code 码
+> 规范的项目必不可缺少的
+
+::: details code表,有待继续完善
+````
+全局code码 1:成功 0:失败
+
+10000 验证通用错误
+
+10001 短信发送失败
+10011 触发拦截验证器 10秒请求超过30次
+
+10100 安全通用错误
+10101 触发中间件限流
+
+20000 配置通用错误
+
+30000 用户类通用错误
+30001 该账号已在其他设备登录
+30002 身份验证会话已过期
+````
+
+:::

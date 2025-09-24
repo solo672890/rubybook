@@ -31,7 +31,7 @@ timedatectl list-timezones
 ````
 cat /etc/os-release
 
-# 机械 or 固态硬盘,输出0 代表是机械硬盘
+# 机械 or 固态硬盘,输出1 代表是机械硬盘
 lsblk -d -o name,rota
 ````
 
