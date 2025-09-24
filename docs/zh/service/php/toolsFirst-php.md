@@ -259,7 +259,7 @@ class LimiterMiddleware implements MiddlewareInterface {
 :::
 
 ## 12. sql 监听
-[代码变动](https://github.com/solo672890/webman_api_basic/commit/d38fe152861aa520cf09211f96bc1e3756f37ca9)
+[代码变动](https://github.com/solo672890/webman_api_basic/commit/d38fe152861aa520cf09211f96bc1e3756f37ca9#diff-f0d0ec9d16c8e7ca3195942e04d2b051cbb424f5a1132499189bcb22cc59ceb2)
 
 > 项目开发,维护,调试时期,查看执行的sql是必不可少的
 > 

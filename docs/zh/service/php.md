@@ -69,3 +69,5 @@ php -c /path/to/your/php.ini start.php start
 
 [君欲善其事,必先利其器-php](/service/php/toolsFirst-php)
 
+[PHP 7.4 到 PHP 8.4 新增语法特性大全](/service/php/add-grammar)
+
