@@ -71,3 +71,10 @@ php -c /path/to/your/php.ini start.php start
 
 [PHP 7.4 到 PHP 8.4 新增语法特性大全](/service/php/add-grammar)
 
+[大话设计模式-php](https://www.bookstack.cn/books/flyingalex-design-patterns-by-php)
+
+[谁说PHP不能异步和并行运行？](https://juejin.cn/post/7369470562144862218)
+
+[thinkphp安装使用ffmpeg](https://www.cnblogs.com/ljbguanli/p/18991320)
+
+[PHP 集成 FFmpeg 处理音视频处理完整指南](https://learnku.com/articles/90637)

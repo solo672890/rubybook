@@ -47,6 +47,12 @@ export const AUDIO_DATA: NavData[] = [
                 desc: '公众号：NEW字幕组',
                 link: 'https://nz99.xyz/tvslist.html'
             },
+            {
+                icon: 'https://ps.aside.top/static/img/favicon.ico',
+                title: 'SeedHub',
+                desc: '每天更新蓝光4K等高清电影和动漫资源的分享平台',
+                link: 'https://www.seedhub.cc/'
+            },
 
         ]
     },

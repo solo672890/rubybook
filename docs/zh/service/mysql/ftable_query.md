@@ -12,14 +12,34 @@ comment: false
 > 
 > 分表设计是按照 `上亿级别的项目思路去设计`,如果是千百万级别的订单则无需分表,分区就行
 > 
-> 或许会有疑问? 为什么不适用mycat这类工具
+> 或许会有疑问? 为什么不适用mycat这类工具,**请不要忘了 Rubybook的宗旨.**
 > 
->  请不要忘了 Rubybook的宗旨
+> 所以在这里选择了 **[有限制查询](/theory/order2_framework_design.html#调研结论)**,为什么选择 **[有限制查询](/theory/order2_framework_design.html#调研结论)**
+> 
+> **👉[无限制查询是什么?](/theory/order2_framework_design.html#无限制查询-按月份分表)**
+> 
+>  
 
 ## 分析
 项目是一个C2C在线交易平台,分表后对技术思路最大的挑战来自于,如何高性能查询表.如何快速找到相关的表中的数据,所以,索引是重点.
 
-略微也要改变一些以前传统单表的查询方法.
+## 思路
+
+这里的分表思路就是按每月分表.和`币安`的做法一样,订单上拉翻页仅显示半年,超过期限则手动选择.账变记录上拉翻页只显示最近3个月,超过则手动选择.
+
+客户端订单查询,直接union all 3张月份表联查.如果3表联查都不够分页(每页20条),再给进行一次三表联查.然后将数据组装起来返回给客户端.
+
+不要担心性能问题. 
+
+[union all性能测试1](/service/mysql/unionAll)  
+
+[union all性能测试2](/service/mysql/orderByOptimize.html#_8%EF%B8%8F⃣-效果)
+
+订单查询:先3表联查,3表不够分页说明是非热门用户,那么符合条件的数据量也少,在索引设计合理的情况下,**union all在总数据上亿条情况下性能并不差**.
+
+账变查询:账变记录会比订单表数据多很多,所以只展示最近3个月的记录,先2表查询(本月和上月),2表不够分页说明是非热门用户,再查一次第三张表.然后再组装数据.
+
+**记住,** 分页后查询只有游标查询这一种办法.
 
 ::: details 订单表结构
 ```` bash
@@ -47,9 +67,9 @@ CREATE TABLE `orders_202508` (
 :::
 
 ::: tip 注意
-`KEY 'idx_from_id' ('from_id','sale_status','created_at' DESC) USING BTREE`
+`KEY 'idx_from_status_created' ('from_id','sale_status','created_at' DESC) USING BTREE`
 
-这个索引一定要这么建立.如果满足 `from_id=xxx and sale_status='start'` 这种条件的数据很多的情况下(2000+),那么这个sql不论怎么查都非常慢.即便已经挂上了`idx_from_status_created`索引
+这个索引一定要这么建立.如果满足 `from_id=xxx and sale_status='start'` 这种条件的数据很多的情况下(2000+),那么这个sql不论怎么查都非常慢.即便已经挂上了`idx_from_status`索引
 
 `KEY 'idx_from_status' ('from_id','sale_status') USING BTREE` 这是之前的做法.
 
@@ -59,19 +79,22 @@ CREATE TABLE `orders_202508` (
 
 当单表达到6000万+数据的时候,SSD查询,这个查询耗时8s+,
 
-添加`created_at BTREE`后,4表union all共计1亿3千万+数据,SSD查询降低到0.15s.
+添加`idx_created_at`索引后,4表union all共计1亿3千万+数据,SSD查询降低到0.15s.
 
 原因是,虽然rows行数并不多,`order by created_at desc `使用不上索引,大量随机 I/O + 未能倒序早停 导致耗时
 :::
 
 ::: danger 添加一项配置
+// 用于改善范围扫描（range scan）或多值查询（如 IN (val1, val2, ...)）时对二级索引的访问效率。
+
 [mysqld]
+
 optimizer_switch=batched_key_access=on,mrr=on
 :::
 
 ## 查询场景 
 
-::: details  **附带一个大表优化后的sql union all children select**
+::: details  **附带一个大表优化后的union all + left join**
 ````php
 SET profiling = 1;
 (SELECT a.id,a.from_id,a.sale_status,a.created_at,a.order_no,b.*
@@ -96,7 +119,7 @@ LIMIT 0,50;
 SHOW PROFILES;
 
 3表共计数据1亿2千万数据,SSD查询耗时 0.14s // [!code warning:3]
-ORDER BY a.created_at DESC 千万不能改成 ORDER BY a.id DESC
+ORDER BY a.created_at DESC 千万不能改成 ORDER BY a.id DESC,
 order_no 索引是关键
 
 ````
@@ -114,18 +137,19 @@ order_no 索引是关键
 :::
 
 ::: details  **场景1️⃣** 订单面板首页,默认查询 [`无限制查`]
-这类查询条件非常宽松,所以只需要按照游标查询法,挨个表查询即可
+首页数据量较大,第一页查询需要2表联查(本月和上月),后续分页查询根据游标按月单表查询即可
 :::
 
-::: details  **场景2️⃣** 查询进行中的订单  [`查6个月`]
-先`照游标查询法`联查3个月,3个月都没数据,说明是冷门用户,再联查一次3个月的订单,最多查询两次.
+::: details  **场景2️⃣** 查询进行中的订单 [`最多查2个月`]
+`照游标查询法`联查2个月(本月和上月).
 :::
 
-::: details  **场景3️⃣** 查询指定订单状态  [`查6个月`]
+::: details  **场景3️⃣** 查询指定订单状态  [`最多查2个月`]
+`照游标查询法`联查2个月(本月和上月).
 :::
 
-::: details **场景4️⃣** 查询指定用户+所有状态  [`查6个月`]
-先`照游标查询法`联查3个月,3个月都没数据,说明是冷门用户,再联查一次3个月的订单,最多查询两次.
+::: details **场景4️⃣** 查询指定用户+所有状态  [`无限制查`]
+`照游标查询法`联查2个月(本月和上月),后续分页查询根据游标按月单表查询即可.
 :::
 
 ::: details   **场景5️⃣** 查询指定用户+指定状态 [`查6个月`]
@@ -135,7 +159,7 @@ order_no 索引是关键
 先`照游标查询法`联查3个月,3个月都没数据,说明是冷门用户,再联查一次3个月的订单,最多查询两次.
 :::
 
-::: details  **场景7️⃣** 查询指定状态+指定时间 [`查6个月`]
+::: details  **场景7️⃣** 查询指定状态+指定时间 [`最多查6个月`]
 先`照游标查询法`联查3个月,3个月都没数据,说明是冷门用户,再联查一次3个月的订单,最多查询两次.
 :::
 ::: details 游标查询法demo
@@ -211,7 +235,7 @@ return ['result'=>$result,'cursor_at'=>$cursor_at,'cursor_id'=>$cursor_id];
 ::: warning info
 客户端虽然页也使用游标查询法,但代码思路有不同
 * 一. 无状态查询时,限定查询历史记录时间:`6个月`,超过时间,则自行手动选择时间查询.
-* 二. 先联查2个月数据,如果两个月数据都不够够分页,说明是非热门用户,再给他联查4个月.也就是查两次.
+* 二. 先联查3个月数据,如果两个月数据都不够够分页,说明是非热门用户,再给他联查3个月.也就是查两次.
 :::
 
 

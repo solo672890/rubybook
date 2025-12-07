@@ -53,6 +53,11 @@ export const TOOL_DATA: NavData[] = [
                 },
                 desc: '聚合网盘搜索引擎',
                 link: 'https://pan.qianfan.app/'
+            },{
+                icon: '/icons/ifixit.webp',
+                title: '探索维修世界',
+                desc: '包罗万象的免费修理指南',
+                link: 'https://zh.ifixit.com/'
             }
         ]
     },
@@ -126,16 +131,18 @@ export const TOOL_DATA: NavData[] = [
                 desc: '虚拟机',
                 link: 'https://www.vmware.com/products/desktop-hypervisor/workstation-and-fusion'
             },
-
-
-
-
         ]
     },
 
     {
         title: 'api',
         items: [
+            {
+                icon: '/icons/sft_pay.png',
+                title: '盛付通',
+                desc: '资金收付解决方案',
+                link: 'https://b.shengpay.com/merchant-platform/#/'
+            },
             {
                 icon: 'https://github.com/public-apis/public-apis/raw/master/.github/cs1586-APILayerLogoUpdate2022-LJ_v2-HighRes.png',
                 title: '免费试用公共API-合集',

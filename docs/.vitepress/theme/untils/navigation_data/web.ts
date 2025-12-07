@@ -20,6 +20,12 @@ export const WEB_DATA: NavData[] = [
                 desc: 'ui库-字节跳动出品的企业级设计系统',
                 link: 'https://arco.design/'
             },
+            {
+                icon: '/icons/antdesignpro.png',
+                title: 'ant Design',
+                desc: 'ui库-字节跳动出品的企业级设计系统',
+                link: 'https://pro.ant.design/zh-CN/'
+            },
         ]
     },
     {

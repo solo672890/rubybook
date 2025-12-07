@@ -696,4 +696,5 @@ class TestMysql extends Command
 ### [记一次 order by 优化](/service/mysql/orderByOptimize)
 ### [C2C交易订单表按月分表后如何查询](/service/mysql/ftable_query)
 ### 👉[mysql的三种log](/service/mysql/will_do)
+### 👉[史上最全 MySQL 锁详解](https://blog.csdn.net/jam_yin/article/details/149293513)
 

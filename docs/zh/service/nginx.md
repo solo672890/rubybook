@@ -206,7 +206,7 @@ http {
     log_format main '$remote_addr - [$time_local] "$request" ' '$status $request_length  ' '"$http_user_agent" "$http_x_forwarded_for"' ' $request_time'; 
    
     server_tokens off; 
-    access_log /var/log/nginx/access main; 
+    access_log /var/log/nginx/access main buffer=64k flush=5s; # 也可以在这里配置syslog+远程日志服务
     access_log /dev/stdout main; 
     sendfile on; 
     server_names_hash_bucket_size 512; 
@@ -344,39 +344,43 @@ cat ./access.log | awk '($NF > 0.7 ) {print $6}' | sort -n | uniq -c | sort -nr 
 
 :::
 
-## 限流配置|防ddos
+## 限流配置|防cc
 ::: details 点我查看
 ````
 # 定义了一个 mylimit 缓冲区（30m）.每M可跟踪1.6万个ip，请求频率为每秒 15 个请求（r/s）,
 # ip跟踪缓存池为30M,超过缓存池后会503
 limit_req_zone $binary_remote_addr zone=mylimit:60m rate=15r/s ;
-# limit_conn_zone $binary_remote_addr zone=conn_limit_zone:60m; 如果被ddos攻击,开启这个
+# limit_conn_zone $binary_remote_addr zone=conn_limit_zone:60m; 如果被ddos攻击,开启这个,替换上面的配置
 server {
-    listen  70;
     # 若客户端在 5 秒内未发送完整请求体或头，Nginx 会主动断开连接，节省资源,快速关闭恶意连接
-    # client_body_timeout 5s;  如果被ddos攻击,开启这个
-    # client_header_timeout 5s; 如果被ddos攻击,开启这个
+    # client_body_timeout 5s;  如被攻击,开启这个,cc攻击发送大量的资源
+    # client_header_timeout 5s; 如被攻击,开启这个,
 
     location / {
-        limit_req zone=mylimit burst=30 delay=15; 
-        limit_req_status 429; #默认返回503，如果想修改返回值，可以设置limit_req_status
-        # limit_conn conn_limit_zone 2 inactive=60s;; 如果被ddos攻击,开启这个
+        limit_req_status 429; #默认返回503，修改返回值为429
+        limit_req zone=mylimit burst=50 delay=15; 
+        #limit_conn conn_limit_zone 3; 如被ddos攻击,开启这个,限制每个ip 同时3个请求,替换上面的配置
         proxy_pass http://localhost:7070;
     }
 }
 
-### rate： 设置最大的访问速率。
-### rate=15r/s,表示每秒最多处理 15个请求。
 ### inactive=30s 表示 IP 在 60 秒内无请求时，记录会被清理
-突发流量：50 个请求同时到达。
-前 15 个请求立即处理（burst - delay）。
-后 15 个请求按 rate=15r/s 的速度延迟处理（即每 66.6ms 释放一个请求）。
-剩余 20 个请求被拒绝（超出 burst 限制）。
+📌 通俗理解： 假设瞬间来了非常多的请求.
+* 1-15个请求,直接通过。(rate=15r/s)
+* 16-30个请求,延迟排队处理。(delay=15)
+* 超过 30 个 → 超过部分全部拒绝。(rate+delay)
+* 超过 50个的部分,nginx不再响应它 (burst=50)
 
+burst代表队列的总长度,delay代表这个队列里,可延迟处理的数量.
+
+📜 Nginx 官方文档佐证
+"The delay parameter specifies how many requests are delayed to comply with the configured rate. Excess requests beyond the delay are rejected immediately, even if they are within the burst limit. "
+翻译:
+"delay 参数指定有多少请求会被延迟以符合限速规则。超出 delay 数量的超额请求会立即被拒绝，即使它们仍在 burst 限制范围内。"
 ````
 :::
 
-## 测试
+## 使用abs测试
 ````  [ab压测]
 # -n 12000 请求总数
 # -c 12000 表示并发数
@@ -386,4 +390,10 @@ server {
 .\Apache24\bin\abs.exe  -n 12000 -c 12000 -p test.txt -T application/x-www-form-urlencoded -k  http://www.oneApi.com/v1/loginSms
 ````
 
-:::
+
+
+
+
+### 👉 [压缩级别设置](/service/nginx/compress_level)
+### 👉 [nginx+lua实现动态ip黑名单](https://juejin.cn/post/7306038680963579919)
+

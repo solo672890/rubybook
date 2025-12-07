@@ -214,20 +214,23 @@ sudo firewall-cmd --state
 
 ### 限制特定ip访问 (添加白名单策略)
 ::: tip 某些场景非常管用
-比如:
-
-A服务器是敏感服务器,那么需要限定只能B服务器访问某端口下的服务
-
-限定某ip ssh登录本服务器(该功能需谨慎,避免ip变化导致无法登录服务器)
+修改后先开一个新终端测试登录，不要关闭当前会话，以防配置错误被锁。
 :::
 
-````
-# 示例：允许IP地址 192.168.1.100 访问 3306 端口
-sudo firewall-cmd --permanent --add-rich-rule='rule family="ipv4" source address="192.168.1.100" port port="3306" protocol="tcp" accept'
+::: code-group
 
-# 重载防火墙规则
-sudo firewall-cmd --reload
+````bash [ubuntu]
+vim /etc/ssh/sshd_config
+AllowUsers *@156.225.48.12  # 开启多个 AllowUsers *@156.225.48.12 *@203.0.113.45 *@198.51.100.77
+sudo systemctl restart ssh
 ````
+````bash [centos]
+vim /etc/ssh/sshd_config
+AllowUsers *@156.225.48.12  # 开启多个 AllowUsers *@156.225.48.12 *@203.0.113.45 *@198.51.100.77
+sudo systemctl restart sshd
+````
+:::
+
 
 ### 禁Ping
 ````

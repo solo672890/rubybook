@@ -70,6 +70,17 @@ export const UI_DATA: NavData[] = [
 
         ]
     },
+    {
+        title: 'APP demo',
+        items: [
+            {
+                icon: '/icons/300.png',
+                title: '关注公众号- 随心系',
+                desc: 'UI设计-虚拟货币/金融/加密钱包合集',
+                link: 'https://mp.weixin.qq.com/s/33QeYgRQb68LkSB5xRms8g'
+            }
+        ]
+    },
 ]
 
 

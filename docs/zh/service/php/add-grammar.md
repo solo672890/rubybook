@@ -62,10 +62,11 @@ $country = $session?->user?->getAddress()?->country;
 ```` php
 
 $result = $variable ?? $defaultValue;
-== 等价于
+等价于
 $result = isset($variable) ? $variable : $defaultValue;
 //它检查的是 是否为 null或未定义，而不是(''、0、false 等),这些“假值”不会触发使用默认值！
 
+$config['timeout'] ??= 30;
 
 $value = $a ?? $b ?? $c ?? 'default'; //链式空合并(PHP 7.4+ 支持)
 $title = $post->title ?? '无标题';    //配合对象属性
