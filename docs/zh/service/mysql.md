@@ -697,4 +697,23 @@ class TestMysql extends Command
 ### [C2C交易订单表按月分表后如何查询](/service/mysql/ftable_query)
 ### 👉[mysql的三种log](/service/mysql/will_do)
 ### 👉[史上最全 MySQL 锁详解](https://blog.csdn.net/jam_yin/article/details/149293513)
+### delete删除数据
+````
+# 先看下表的大小
+SELECT 
+    table_name,
+    ROUND((data_length + index_length) / 1024 / 1024, 2) AS `Size (MB)`
+FROM information_schema.TABLES
+WHERE table_schema = 'your_database_name' 
+  AND table_name = 'your_table_name';
+
+#如果表太大,则分批删除
+
+#delete删除,只是对数据的一种标记,不会真正的删除
+#想要真正的删除并且释放空间,请delete结束后,执行
+
+-- 重建表并释放未使用空间
+OPTIMIZE TABLE your_table_name;
+
+````
 

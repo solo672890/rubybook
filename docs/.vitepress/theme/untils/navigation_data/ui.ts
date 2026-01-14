@@ -34,7 +34,7 @@ export const UI_DATA: NavData[] = [
                 icon: 'https://lordicon.com/media/assets/favicon/apple-touch-icon.png',
                 title: 'Lordicon',
                 desc: '动态ICON',
-                link: 'https://lordicon.com/icons/wired/flat?i=25-error-cross'
+                link: 'https://igoutu.cn/icons'
             },{
                 icon: 'https://icon.wuruihong.com/wrh/logo_bordered.png',
                 title: '图标工厂|启动图',
