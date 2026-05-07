@@ -12,7 +12,7 @@ export const zhSidebar: DefaultTheme.Sidebar = {
 function theoryService() :DefaultTheme.SidebarItem[] {
     return [
         {
-            text: "理论",
+            text: "编程",
             collapsed: false,
             items: [
                 { text: "RubyBook是什么", link: "whatsRubyBook" },
@@ -20,7 +20,15 @@ function theoryService() :DefaultTheme.SidebarItem[] {
                 { text: "如何设计每天一亿订单的订单系统?", link: "order_framework_design" },
                 { text: "如何设计每天20万订单的c2c系统?", link: "order1_framework_design" },
                 { text: "分表后,客户端如何翻页查询", link: "order2_framework_design" },
+            ],
+        },
+        {
+            text: "合约",
+            collapsed: true,
+            items: [
                 { text: "合约交易心得", link: "hyjyjl" },
+                { text: "合约预测", link: "hyyc" },
+
 
             ],
         },

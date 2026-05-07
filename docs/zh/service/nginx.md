@@ -203,7 +203,7 @@ events {
 http {
     include mime.types; 
     default_type application/octet-stream; 
-    log_format main '$remote_addr - [$time_local] "$request" ' '$status $request_length  ' '"$http_user_agent" "$http_x_forwarded_for"' ' $request_time'; 
+    log_format main '$remote_addr - [$time_local] "$request" ' '$status $request_length  ' '"$http_user_agent" "$http_x_forwarded_for"' ' rt=$request_time uct=$upstream_response_time'; 
    
     server_tokens off; 
     access_log /var/log/nginx/access main buffer=64k flush=5s; # 也可以在这里配置syslog+远程日志服务

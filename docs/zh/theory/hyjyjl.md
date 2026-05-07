@@ -144,13 +144,35 @@ valueScan APP 搜索合约 -> 链上地址 -> 右滑到持仓成本
 
 `如果做多` 我认为这个数值没有参考价值.还是得分析资金流入流出.
 
-### **3.1.查看多空比**
+### **3.2.查看主力持仓地址变化**
+
+https://www.oklink.com/zh-hans/
+
+比如,pieverse的智能合约地址
+
+### **4.查看大额挂单**
+
+coinglass APP 数据 -> 大额挂单 (https://www.coinglass.com/zh/large-orderbook-statistics)
+
+大额挂单可能是庄家的行为,也有可能是鲸鱼在那里碰运气
+
+真真假假这就是币圈
+
+### **3.2.查看主力持仓地址变化**
+
+https://www.oklink.com/zh-hans/
+
+比如,pieverse的智能合约地址
+
+
+
+### **3.2.查看多空比**
 
 币安 聪明钱
 
 ### **4.查找解锁代币信息**
 
-https://www.coinglass.com/zh/token-unlock
+https://coinmarketcap.com/zh/token-unlocks/
 
 代币解锁前一周,一般都会拉升价格,为了方便出货.大搞率会疯涨疯跌
 
