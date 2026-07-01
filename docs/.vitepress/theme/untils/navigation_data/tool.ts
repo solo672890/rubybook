@@ -65,6 +65,12 @@ export const TOOL_DATA: NavData[] = [
                 desc: '包罗万象的免费修理指南',
                 link: 'https://zh.ifixit.com/'
             }
+            ,{
+                icon: 'https://ssllabs.com/images/qualys-ssl-labs-logo.png',
+                title: 'ssl链条顺序，评级',
+                desc: 'HOW WELL DO YOU KNOW SSL?',
+                link: 'https://www.ssllabs.com/index.html'
+            }
         ]
     },
     {
