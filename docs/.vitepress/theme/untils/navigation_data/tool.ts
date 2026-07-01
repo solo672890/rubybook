@@ -17,6 +17,12 @@ export const TOOL_DATA: NavData[] = [
                 link: 'https://www.boce.com/'
             },
             {
+                icon: 'https://www.itdog.cn/frame/images/logo_2023.png',
+                title: 'itDog',
+                desc: '测速/劫持/污染/拦截/dns',
+                link: 'https://www.itdog.cn/'
+            },
+            {
                 icon: 'https://nav.yiov.top/plugin.gif',
                 title: '在线工具集合',
                 desc: '在线抠图/favicon制作/useragent分析/图片加水印',

@@ -32,6 +32,20 @@ CREATE TABLE `orders_202508` (
   KEY `created_at` (`created_at`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci  ;
 ````
+
+awk '{
+# 1. 提取 rt 数值
+split($(NF-1), rt_arr, "=");
+rt_val = rt_arr[2] + 0;
+
+    # 2. 过滤：仅保留 rt > 0.07（70ms）
+    if (rt_val > 0.07) {
+        # 3. 输出核心字段（| 分隔），完全跳过 UA
+        printf "[%s] %s | %s %s | %s | %s | %s | %s | %s | %s\n", \
+            FILENAME, $1, $3, $4, $8, $9, $10, $(NF-2), $(NF-1), $NF;
+    }
+}' /www/wwwlogs/{920l.com,91ysys.com,3iuu.cn}.log | tail -50
+
 :::
 
 ## 1️⃣耗时语句
