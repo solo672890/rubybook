@@ -112,6 +112,7 @@ function gitNavigation(): DefaultTheme.SidebarItem[] {
             items: [
                 { text: "新手教程", link: "tutorial" },
                 { text: "更换远程库", link: "changeRemote" },
+                { text: "服务端拉取代码", link: "server_pull" },
                 { text: "多人协作", link: "collaboration" },
 
             ],
