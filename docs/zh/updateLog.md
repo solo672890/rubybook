@@ -3,9 +3,12 @@ sidebar: false
 prev: false
 next: false
 ---
+::: timeline 2026-10-06
+- <sapn class="marker-evy">Windows 11 安装 WSL 2 与 AlmaLinux 9 详细指南</sapn>
+  :::
 ::: timeline 2026-08-3
 - <sapn class="marker-evy">新增网络排查知识-域名</sapn>
-  :::
+:::
 ::: timeline 2025-08-17
 - <sapn class="marker-evy">新增git 目录</sapn>
 :::

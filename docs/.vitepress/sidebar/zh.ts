@@ -55,6 +55,7 @@ function sidebarService() :DefaultTheme.SidebarItem[] {
                 { text: "redis", link: "redis" },
                 { text: "mysql", link: "mysql" },
                 { text: "nginx", link: "nginx" },
+                { text: "wsl-almalinux9", link: "wsl-almalinux9" },
             ],
         },
         {
