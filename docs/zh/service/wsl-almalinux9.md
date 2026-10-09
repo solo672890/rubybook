@@ -351,7 +351,7 @@ wsl --manage AlmaLinux-9 --move "D:\WSL\AlmaLinux9"
 将名称换成实际列表中的名称，目标不要使用已被另一发行版占用的目录。Linux 内部路径保持不变。若不识别 `--move`，先更新 WSL，不要手动移动虚拟磁盘。
 
 
-## 12. 安装宝塔
+## 12. 安装宝塔，如果你一直卡在下面的安装,我建议你更换ubuntu系统
 1.先安装宝塔国际版,安装好后
 
 由于 Linux 发行版的“极简主义”设计哲学,很多编译工具都没有,直接安装php,mysql,nginx等会失败.
@@ -386,3 +386,35 @@ dnf --enablerepo=crb install -y \
 - [AlmaLinux：官方 WSL 安装指南](https://wiki.almalinux.org/documentation/wsl)
 - [微软 WSL：移动发行版命令说明](https://github.com/microsoft/WSL/blob/master/localization/strings/en-US/Resources.resw)
 - [JetBrains：在 PhpStorm 中使用 WSL](https://www.jetbrains.com/help/phpstorm/how-to-use-wsl-development-environment-in-product.html)
+
+
+## 13.手机请求wsl里的服务
+
+````shell
+ipconfig 找出本机局域网ip 10.105.76.216
+
+wsl hostname -I 找出wsl局域网ip 172.23.132.71
+
+#管理员 PowerShell，将 Windows 的 8785 端口转发到 WSL 的 8785 端口：
+netsh interface portproxy add v4tov4 listenaddress=10.105.76.216 listenport=8785 connectaddress=172.23.132.71 connectport=8785
+
+#放行该端口，允许局域网设备访问：
+New-NetFirewallRule -DisplayName "WSL API 8785" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8785 -RemoteAddress LocalSubnet
+
+#查看windows转发了哪些端口
+netsh interface portproxy show all   #结果是
+
+#侦听 ipv4:                 连接到 ipv4:
+
+#地址            端口        地址            端口
+#--------------- ----------  --------------- ----------
+#10.105.76.216   8080        172.23.132.71   8080
+#10.105.76.216   81          172.23.132.71   81
+
+# 删除转发
+netsh interface portproxy delete v4tov4 listenaddress=10.105.76.216 listenport=8080
+
+# 清空转发
+netsh interface portproxy reset
+
+````
