@@ -401,6 +401,9 @@ netsh interface portproxy add v4tov4 listenaddress=10.105.76.216 listenport=8785
 #放行该端口，允许局域网设备访问：
 New-NetFirewallRule -DisplayName "WSL API 8785" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 8785 -RemoteAddress LocalSubnet
 
+
+#宝塔上再配置172.23.132.71+port ,app端即可访问
+
 #查看windows转发了哪些端口
 netsh interface portproxy show all   #结果是
 
@@ -410,6 +413,19 @@ netsh interface portproxy show all   #结果是
 #--------------- ----------  --------------- ----------
 #10.105.76.216   8080        172.23.132.71   8080
 #10.105.76.216   81          172.23.132.71   81
+
+
+#新增了一条 Windows 防火墙入站放行规则
+New-NetFirewallRule `
+  -DisplayName "Huangguo API 8786 LAN" `
+  -Direction Inbound `
+  -Action Allow `
+  -Protocol TCP `
+  -LocalPort 8786 `
+  -LocalAddress 192.168.1.254 ` #windows ip
+  -RemoteAddress 192.168.1.0/24 `
+  -InterfaceAlias "WLAN" `
+  -Profile Public
 
 # 删除转发
 netsh interface portproxy delete v4tov4 listenaddress=10.105.76.216 listenport=8080
