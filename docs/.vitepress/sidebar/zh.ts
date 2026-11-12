@@ -98,6 +98,8 @@ function webNavigation(): DefaultTheme.SidebarItem[] {
             collapsed: false,
             items: [
                 { text: "node", link: "node" },
+                { text: "IPA签名打包完整手册", link: "ios_ipa" },
+                { text: "IOS APNs推送证书制作", link: "ios_apns" },
 
             ],
         },
