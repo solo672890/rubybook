@@ -51,11 +51,20 @@ function sidebarService() :DefaultTheme.SidebarItem[] {
             text: "服务端",
             collapsed: false,
             items: [
-                { text: "Linux", link: "linux" },
+
                 { text: "redis", link: "redis" },
                 { text: "mysql", link: "mysql" },
                 { text: "nginx", link: "nginx" },
-                { text: "wsl-almalinux9", link: "wsl-almalinux9" },
+                {
+                    text: "运维",
+                    collapsed: true,
+                    items: [
+
+                        { text: "wsl-almalinux9", link: "yunwei/wsl-almalinux9" },
+                        { text: "Linux", link: "yunwei/linux" },
+                        { text: "使用fail2ban", link: "yunwei/fail2ban" },
+                    ],
+                },
             ],
         },
         {
